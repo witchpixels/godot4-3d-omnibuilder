@@ -1,0 +1,75 @@
+[gd_scene load_steps=11 format=3 uid="uid://dm7aywol8fq5c"]
+
+[ext_resource type="Script" path="res://src/CameraOrbitComponent.cs" id="1_pmxok"]
+[ext_resource type="Texture2D" uid="uid://cfs70tgp0fjlb" path="res://icon.png" id="2_hvmyp"]
+[ext_resource type="PackedScene" uid="uid://c7my5wqcx0i4r" path="res://d_20.tscn" id="3_s2vwk"]
+
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_dr0cc"]
+rayleigh_coefficient = 13.06
+mie_eccentricity = 0.4
+turbidity = 113.45
+ground_color = Color(0.0196078, 0.0392157, 0.121569, 1)
+
+[sub_resource type="Sky" id="Sky_7fwg4"]
+sky_material = SubResource("PhysicalSkyMaterial_dr0cc")
+
+[sub_resource type="Environment" id="Environment_a1avc"]
+background_mode = 2
+sky = SubResource("Sky_7fwg4")
+tonemap_mode = 3
+tonemap_white = 0.52
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_bda14"]
+dof_blur_far_enabled = true
+dof_blur_far_distance = 3.45
+dof_blur_far_transition = 8.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0na7k"]
+albedo_texture = ExtResource("2_hvmyp")
+uv1_triplanar = true
+texture_filter = 0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_s1uk7"]
+material = SubResource("StandardMaterial3D_0na7k")
+size = Vector2(10, 10)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_ghebs"]
+data = PackedVector3Array(5, 0, 5, -5, 0, 5, 5, 0, -5, -5, 0, 5, -5, 0, -5, 5, 0, -5)
+
+[node name="main_scene" type="Node3D"]
+
+[node name="environment" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.06438, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="environment"]
+environment = SubResource("Environment_a1avc")
+camera_attributes = SubResource("CameraAttributesPractical_bda14")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="environment"]
+transform = Transform3D(0.465893, 0.595806, -0.654186, 0, 0.739326, 0.673348, 0.884841, -0.313708, 0.344446, 0, 0, 0)
+
+[node name="OrbitalCamera" type="Node3D" parent="."]
+
+[node name="Camera3D" type="Camera3D" parent="OrbitalCamera"]
+transform = Transform3D(1, 0, 0, 0, 0.875456, 0.483298, 0, -0.483298, 0.875456, 0, 1.77729, 4.55083)
+
+[node name="components" type="Node" parent="OrbitalCamera"]
+
+[node name="CameraOrbitComponent" type="Node" parent="OrbitalCamera/components" node_paths=PackedStringArray("_orbitalRoot")]
+script = ExtResource("1_pmxok")
+_degreesPerSecond = 0.5
+_orbitalRoot = NodePath("../..")
+
+[node name="Plane" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_s1uk7")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Plane"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Plane/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_ghebs")
+
+[node name="D20" parent="." instance=ExtResource("3_s2vwk")]
+transform = Transform3D(-0.218914, 0.933129, 0.285212, -0.568156, -0.359541, 0.740222, 0.793268, 0, 0.608872, 0, 2.81533, 0)
+
+[node name="D21" parent="." instance=ExtResource("3_s2vwk")]
+transform = Transform3D(0.392851, -0.760369, 0.517212, 0, 0.56243, 0.826845, -0.919602, -0.324827, 0.220951, 0.427467, 3.20174, 0)
