@@ -69,7 +69,7 @@ jobs:
     needs: build_image
     runs-on: ubuntu-latest
     container:
-      image: ${{ needs.build_image.outputs.image_name }}:${{ needs.build_image.outputs.image_tag }}
+      image: ghcr.io/witchpixels/godot4-omnibuilder3d:0.1.0-PullRequest0001.22-4.1.1
       env:
         EXPORT_NAME: omnibuilder_test_project
         PROJECT_PATH: test_project
@@ -95,7 +95,7 @@ jobs:
     needs: build_image
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/witchpixels/godot4-omnibuilder3d:${{ needs.build_image.outputs.image_tag }}
+      image: ghcr.io/witchpixels/godot4-omnibuilder3d:0.1.0-PullRequest0001.22-4.1.1
     steps:
       - name: Checkout
         uses: actions/checkout@v2
