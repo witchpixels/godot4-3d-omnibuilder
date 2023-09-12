@@ -14,8 +14,9 @@ on:
         required: true
   pull_request:
     branches: [ "main" ]
-    version: "4.1.1"
-    release_name: "stable"
+    inputs:
+      version: "4.1.1"
+      release_name: "stable"
 env:
   IMAGE_NAME: godot4-omnibuilder3d
 jobs:
