@@ -102,13 +102,14 @@ jobs:
       - name: Setup
         run: |
           setup.sh
-      - name: Linux Build
+      - name: Prebuild
         run: |
           cd $PROJECT_PATH
           apply_version_info.sh
           mkdir -v -p build/linux
           godot -v -e --quit --headless
-          godot --headless -v --export-release "Linux/X11" build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
+      - name: Linux Build
+        run: godot --headless -v --export-release "Linux/X11" build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
@@ -131,13 +132,14 @@ jobs:
       - name: Setup
         run: |
           setup.sh
-      - name: Windows Build
+      - name: Prebuild
         run: |
           cd $PROJECT_PATH
           apply_version_info.sh
           mkdir -v -p build/windows
           godot -v -e --quit --headless
-          godot --headless -v --export-release "Windows Desktop" build/windows/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.exe
+      - name: Windows Build
+        run: godot --headless -v --export-release "Windows Desktop" build/windows/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
