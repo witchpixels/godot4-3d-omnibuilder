@@ -102,6 +102,7 @@ jobs:
       - name: Linux Build
         run: |
           cd $PROJECT_PATH
+          setup_blender_editor_path.sh
           apply_version_info.sh
           mkdir -v -p build/linux
           godot --headless -d -v --export-release "Linux/X11" build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
@@ -127,6 +128,7 @@ jobs:
       - name: Windows Build
         run: |
           cd $PROJECT_PATH
+          setup_blender_editor_path.sh
           apply_version_info.sh
           mkdir -v -p build/windows
           godot --headless -v --export-release "Windows Desktop" build/windows/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.exe
