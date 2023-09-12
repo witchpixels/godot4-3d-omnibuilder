@@ -1,8 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://dm7aywol8fq5c"]
+[gd_scene load_steps=10 format=3 uid="uid://dm7aywol8fq5c"]
 
 [ext_resource type="Script" path="res://src/CameraOrbitComponent.cs" id="1_pmxok"]
 [ext_resource type="Texture2D" uid="uid://cfs70tgp0fjlb" path="res://icon.png" id="2_hvmyp"]
-[ext_resource type="PackedScene" uid="uid://c7my5wqcx0i4r" path="res://d_20.tscn" id="3_s2vwk"]
 
 [sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_dr0cc"]
 rayleigh_coefficient = 13.06
@@ -67,9 +66,3 @@ mesh = SubResource("PlaneMesh_s1uk7")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Plane/StaticBody3D"]
 shape = SubResource("ConcavePolygonShape3D_ghebs")
-
-[node name="D20" parent="." instance=ExtResource("3_s2vwk")]
-transform = Transform3D(-0.218914, 0.933129, 0.285212, -0.568156, -0.359541, 0.740222, 0.793268, 0, 0.608872, 0, 2.81533, 0)
-
-[node name="D21" parent="." instance=ExtResource("3_s2vwk")]
-transform = Transform3D(0.392851, -0.760369, 0.517212, 0, 0.56243, 0.826845, -0.919602, -0.324827, 0.220951, 0.427467, 3.20174, 0)
