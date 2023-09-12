@@ -15,10 +15,6 @@ RUN bash /opt/scripts/install_blender.sh
 ADD setup_blender_editor_path.sh /opt/scripts/setup_blender_editor_path.sh
 RUN bash /opt/scripts/setup_blender_editor_path.sh
 
-# install gitversion, but you don't need to use it.
-ADD install_gitversion.sh /opt/scripts/install_gitversion.sh
-RUN bash /opt/scripts/install_gitversion.sh
-
 # A tool we use for pulling apart version strings
 RUN apt install -y jq
 
