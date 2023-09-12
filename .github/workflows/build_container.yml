@@ -13,8 +13,8 @@ jobs:
     name: Build Image
     runs-on: ubuntu-latest
     outputs:
-      image_name: ${{ steps.write_image_ref.image_name }}
-      image_tag: ${{ steps.write_image_ref.image_tag }}
+      image_name: ${{ steps.write_image_name.image_name }}
+      image_tag: ${{ steps.write_image_tag.image_tag }}
     steps:
       - uses: actions/checkout@v3
       # Bunch of stuff to make GitVersion Work
@@ -55,11 +55,15 @@ jobs:
           build-args: |
             GODOT_VERSION=${{ env.GODOT_VERSION }}
             RELEASE_NAME=${{ env.RELEASE_NAME }}
-      - name: Output image tag for test project build
-        id: write_image_ref
-        run: |
-          echo "image_name=ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}"  >> "$GITHUB_OUTPUT"
-          echo "image_tag=${{ steps.gitversion.outputs.semVer }}-${{ env.GODOT_VERSION }}${{ env.IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
+      
+      - name: Output image name for test project build
+        id: write_image_name
+        run: echo "image_name=ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}"  >> $GITHUB_OUTPUT
+
+      - name: Output image name for test project build
+        id: write_image_tag
+        run: echo "image_tag=${{ steps.gitversion.outputs.semVer }}-${{ env.GODOT_VERSION }}${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
+  
   build_project_linux:
     name: Build Test Project (Linux)
     needs: build_image
@@ -85,6 +89,7 @@ jobs:
         with:
           name: linux
           path: build/linux
+  
   build_project_windows:
     name: Build Test Project (Windows Desktop)
     needs: build_image
