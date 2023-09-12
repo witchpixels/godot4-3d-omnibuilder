@@ -46,13 +46,13 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{steps.gitversion.outputs.semVer}}${{steps.gitversion.outputs.preReleaseTagWithDash}}-${{ env.GODOT_VERSION }}${{ env.IMAGE_TAG }}
+            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{steps.gitversion.outputs.semVer}}-${{ env.GODOT_VERSION }}${{ env.IMAGE_TAG }}
           build-args: |
             GODOT_VERSION=${{ env.GODOT_VERSION }}
             RELEASE_NAME=${{ env.RELEASE_NAME }}
       - name: Output image tag for test project build
         run: |
-          echo "image_and_tag=ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{steps.gitversion.outputs.semVer}}${{steps.gitversion.outputs.preReleaseTagWithDash}}-${{ env.GODOT_VERSION }}${{ env.IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
+          echo "image_and_tag=ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{steps.gitversion.outputs.semVer}}-${{ env.GODOT_VERSION }}${{ env.IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
   build_project_linux:
     name: Build Test Project (Linux)
     needs: build_image
