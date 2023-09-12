@@ -5,7 +5,19 @@ on:
       version:
         description: 'Version of engine to build, must be >4.0'     
         required: true
-        default: "4.0"
+        default: "4.1.1"
+        type: string
+      release_name:
+        description: 'Release name, usually "stable", but can also be something like "rc3", "beta1"'
+        type: string
+        default: "stable"
+        required: true
+  workflow_call:      
+    inputs:
+      version:
+        description: 'Version of engine to build, must be >4.0'     
+        required: true
+        default: "4.1.1"
         type: string
       release_name:
         description: 'Release name, usually "stable", but can also be something like "rc3", "beta1"'
@@ -14,13 +26,10 @@ on:
         required: true
   pull_request:
     branches: [ "main" ]
-    inputs:
-      version: "4.1.1"
-      release_name: "stable"
 env:
   IMAGE_NAME: godot4-omnibuilder3d
 jobs:
-  build:
+  build_image:
     name: Build Image
     runs-on: ubuntu-latest
     steps:
@@ -63,9 +72,9 @@ jobs:
           build-args: |
             GODOT_VERSION=${{ github.event.inputs.version }}
             RELEASE_NAME=${{ github.event.inputs.release_name }}
-        - name: Output image tag for test project build
-          run: |
-            echo "image_and_tag=ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{steps.gitversion.outputs.semVer}}${{steps.gitversion.outputs.preReleaseTagWithDash}}-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
+      - name: Output image tag for test project build
+        run: |
+          echo "image_and_tag=ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{steps.gitversion.outputs.semVer}}${{steps.gitversion.outputs.preReleaseTagWithDash}}-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
   build_project_linux:
     name: Build Test Project (Linux)
     needs: build_image
