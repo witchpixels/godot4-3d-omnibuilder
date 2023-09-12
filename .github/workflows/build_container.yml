@@ -19,6 +19,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      # Bunch of stuff to make GitVersion Work
+      - name: Fetch all history for all tags and branches
+        run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          git fetch --prune --unshallow
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0
+        with:
+          versionSpec: '5.x'
+      - name: Determine Version
+        uses: gittools/actions/gitversion/execute@v0
+        id: gitversion
+        with:
+          useConfigFile: true
       - run:  echo IMAGE_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
       - name: Login to GitHub Container Registry 
         uses: docker/login-action@v1.14.1
@@ -39,8 +54,10 @@ jobs:
           file: Dockerfile
           push: false
           tags: |
-            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:mono-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:mono-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}
+            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}-latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}-latest
+            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}-${{steps.gitversion.outputs.fullSemVer}}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}-${{steps.gitversion.outputs.fullSemVer}}
           build-args: |
             GODOT_VERSION=${{ github.event.inputs.version }}
             RELEASE_NAME=${{ github.event.inputs.release_name }}
