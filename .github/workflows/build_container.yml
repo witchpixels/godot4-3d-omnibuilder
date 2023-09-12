@@ -11,6 +11,7 @@ env:
 jobs:
   meta:
     name: Determine build state
+    runs-on: ubuntu-latest
     outputs:
       image_owner: ${{ steps.write_image_owner.image_owner }}
       image_name: ${{ env.IMAGE_NAME }}
