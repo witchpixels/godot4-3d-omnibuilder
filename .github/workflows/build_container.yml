@@ -1,33 +1,11 @@
 name: Build and Verify Container
-on:  
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version of engine to build, must be >4.0'     
-        required: true
-        default: "4.1.1"
-        type: string
-      release_name:
-        description: 'Release name, usually "stable", but can also be something like "rc3", "beta1"'
-        type: string
-        default: "stable"
-        required: true
-  workflow_call:      
-    inputs:
-      version:
-        description: 'Version of engine to build, must be >4.0'     
-        required: true
-        default: "4.1.1"
-        type: string
-      release_name:
-        description: 'Release name, usually "stable", but can also be something like "rc3", "beta1"'
-        type: string
-        default: "stable"
-        required: true
+on:
   pull_request:
     branches: [ "main" ]
 env:
   IMAGE_NAME: godot4-omnibuilder3d
+  GODOT_VERSION: 4.1.1
+  RELEASE_NAME: stable
 jobs:
   build_image:
     name: Build Image
@@ -60,7 +38,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run:  echo IMAGE_TAG=$(echo ${{ github.event.inputs.release_name != 'stable' && format('.{0}', github.event.inputs.release_name) || '' }}) >> $GITHUB_ENV
+      - run:  echo IMAGE_TAG=$(echo ${{ env.RELEASE_NAME != 'stable' && format('.{0}', env.RELEASE_NAME) || '' }}) >> $GITHUB_ENV
       - name: Build and push Docker images
         uses: docker/build-push-action@v2.9.0
         with:
@@ -68,13 +46,13 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{steps.gitversion.outputs.semVer}}${{steps.gitversion.outputs.preReleaseTagWithDash}}-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}
+            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{steps.gitversion.outputs.semVer}}${{steps.gitversion.outputs.preReleaseTagWithDash}}-${{ env.GODOT_VERSION }}${{ env.IMAGE_TAG }}
           build-args: |
-            GODOT_VERSION=${{ github.event.inputs.version }}
-            RELEASE_NAME=${{ github.event.inputs.release_name }}
+            GODOT_VERSION=${{ env.GODOT_VERSION }}
+            RELEASE_NAME=${{ env.RELEASE_NAME }}
       - name: Output image tag for test project build
         run: |
-          echo "image_and_tag=ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{steps.gitversion.outputs.semVer}}${{steps.gitversion.outputs.preReleaseTagWithDash}}-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
+          echo "image_and_tag=ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{steps.gitversion.outputs.semVer}}${{steps.gitversion.outputs.preReleaseTagWithDash}}-${{ env.GODOT_VERSION }}${{ env.IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
   build_project_linux:
     name: Build Test Project (Linux)
     needs: build_image
