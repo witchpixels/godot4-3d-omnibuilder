@@ -65,6 +65,10 @@ jobs:
         EXPORT_NAME: omnibuilder_test_project
         PROJECT_PATH: test_project
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
       - name: Linux Build
         run: |
           cd $PROJECT_PATH
@@ -83,6 +87,10 @@ jobs:
     container:
       image: ${{needs.build_image.outputs.image_and_tag}}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
       - name: Windows Build
         run: |
           cd $PROJECT_PATH
