@@ -1,19 +1,18 @@
 name: Build and Verify Container
 on:  
   workflow_dispatch:
-  inputs:
-    version:
-      description: 'Version of engine to build, must be >4.0'     
-      required: true
-      type: string
-    release_name:
-      description: 'Release name, usually "stable", but can also be something like "rc3", "beta1"'
-      type: string
-      default: "stable"
-      required: true
+    inputs:
+      version:
+        description: 'Version of engine to build, must be >4.0'     
+        required: true
+        type: string
+      release_name:
+        description: 'Release name, usually "stable", but can also be something like "rc3", "beta1"'
+        type: string
+        default: "stable"
+        required: true
 env:
   IMAGE_NAME: godot4-omnibuilder3d
-
 jobs:
   build:
     name: Build Image
@@ -33,6 +32,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - run:  echo IMAGE_TAG=$(echo ${{ github.event.inputs.release_name != 'stable' && format('.{0}', github.event.inputs.release_name) || '' }}) >> $GITHUB_ENV
-      
-
-
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v2.9.0
+        with:
+          context: .
+          file: Dockerfile
+          push: false
+          tags: |
+            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:mono-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:mono-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}
+          build-args: |
+            GODOT_VERSION=${{ github.event.inputs.version }}
+            RELEASE_NAME=${{ github.event.inputs.release_name }}
