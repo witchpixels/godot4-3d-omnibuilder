@@ -66,7 +66,7 @@ jobs:
       - name: Linux Build
         run: |
           cd $PROJECT_PATH
-          bash apply_version_info.sh
+          bash /opt/scripts/apply_version_info.sh
           mkdir -v -p build/linux
           godot --headless -d -v --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
       - name: Upload Artifact
@@ -87,7 +87,7 @@ jobs:
       - name: Windows Build
         run: |
           cd $PROJECT_PATH
-          bash apply_version_info.sh
+          bash /opt/scripts/apply_version_info.sh
           mkdir -v -p build/windows
           godot --headless -v --export-release "Windows Desktop" build/windows/$EXPORT_NAME.exe
       - name: Upload Artifact
