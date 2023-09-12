@@ -107,7 +107,7 @@ jobs:
           cd $PROJECT_PATH
           apply_version_info.sh
           mkdir -v -p build/linux
-          godot --headless -d -v --export-release "Linux/X11" build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
+          godot --headless -d --export-release "Linux/X11" build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
