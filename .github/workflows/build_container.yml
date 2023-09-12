@@ -5,12 +5,17 @@ on:
       version:
         description: 'Version of engine to build, must be >4.0'     
         required: true
+        default: "4.0"
         type: string
       release_name:
         description: 'Release name, usually "stable", but can also be something like "rc3", "beta1"'
         type: string
         default: "stable"
         required: true
+  pull_request:
+    branches: [ "main" ]
+    version: "4.1.1"
+    release_name: "stable"
 env:
   IMAGE_NAME: godot4-omnibuilder3d
 jobs:
@@ -19,7 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
       # Bunch of stuff to make GitVersion Work
       - name: Fetch all history for all tags and branches
         run: |
@@ -52,12 +56,54 @@ jobs:
         with:
           context: .
           file: Dockerfile
-          push: false
+          push: true
           tags: |
-            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:latest-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}
             ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{steps.gitversion.outputs.semVer}}${{steps.gitversion.outputs.preReleaseTagWithDash}}-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{steps.gitversion.outputs.semVer}}${{steps.gitversion.outputs.preReleaseTagWithDash}}-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}
           build-args: |
             GODOT_VERSION=${{ github.event.inputs.version }}
             RELEASE_NAME=${{ github.event.inputs.release_name }}
+        - name: Output image tag for test project build
+          run: |
+            echo "image_and_tag=ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{steps.gitversion.outputs.semVer}}${{steps.gitversion.outputs.preReleaseTagWithDash}}-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
+  build_project_linux:
+    name: Build Test Project (Linux)
+    needs: build_image
+    runs-on: ubuntu-latest
+    container:
+      image: ${{needs.build_image.outputs.image_and_tag}}
+      env:
+        EXPORT_NAME: omnibuilder_test_project
+        PROJECT_PATH: test_project
+    steps:
+      - name: Linux Build
+        run: |
+          cd $PROJECT_PATH
+          bash apply_version_info.sh
+          mkdir -v -p build/linux
+          godot --headless -d -v --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: linux
+          path: build/linux
+  build_project_windows:
+    name: Build Test Project (Windows Desktop)
+    needs: build_image
+    runs-on: ubuntu-latest
+    container:
+      image: ${{needs.build_image.outputs.image_and_tag}}
+      env:
+        EXPORT_NAME: omnibuilder_test_project
+        PROJECT_PATH: test_project
+    steps:
+      - name: Windows Build
+        run: |
+          cd $PROJECT_PATH
+          bash apply_version_info.sh
+          mkdir -v -p build/windows
+          godot --headless -v --export-release "Windows Desktop" build/windows/$EXPORT_NAME.exe
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: windows
+          path: build/windows
