@@ -20,9 +20,10 @@ RUN apt install -y jq
 # Some paths produced in the image are incorrect, and others need to be fixed up specifically for github
 ADD setup_template_and_github_paths.sh /opt/scripts/setup_template_and_github_paths.sh
 
-ARG GODOT_VERSION
-ARG RELEASE_NAME
-RUN bash /opt/scripts/setup_template_and_github_paths.sh
+# This is the script that the end user will be using
+ADD setup.sh /opt/scripts/setup.sh
 
+# Finally, the optional script to stamp versions if you need it
 ADD apply_version_info.sh /opt/scripts/apply_version_info.sh
+
 ENV PATH="/opt/scripts/:${PATH}"
