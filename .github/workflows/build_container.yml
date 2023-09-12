@@ -54,13 +54,13 @@ jobs:
             RELEASE_NAME=${{ env.RELEASE_NAME }}
       - name: Output image tag for test project build
         run: |
-          echo "image_and_tag=ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{steps.gitversion.outputs.semVer}}-${{ env.GODOT_VERSION }}${{ env.IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
+          echo "image_tag=${{steps.gitversion.outputs.semVer}}-${{ env.GODOT_VERSION }}${{ env.IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
   build_project_linux:
     name: Build Test Project (Linux)
     needs: build_image
     runs-on: ubuntu-latest
     container:
-      image: ${{needs.build_image.outputs.image_and_tag}}
+      image: ghcr.io/witchpixels/godot4-omnibuilder3d:${{needs.build_image.outputs.image_tag}}
       env:
         EXPORT_NAME: omnibuilder_test_project
         PROJECT_PATH: test_project
@@ -85,7 +85,7 @@ jobs:
     needs: build_image
     runs-on: ubuntu-latest
     container:
-      image: ${{needs.build_image.outputs.image_and_tag}}
+      image: ghcr.io/witchpixels/godot4-omnibuilder3d:${{needs.build_image.outputs.image_tag}}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
