@@ -90,7 +90,7 @@ jobs:
       - build_image
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}
+      image: ghcr.io/${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ needs.meta.outputs.image_tag }}
       env:
         EXPORT_NAME: omnibuilder_test_project
         PROJECT_PATH: test_project
@@ -118,7 +118,7 @@ jobs:
       - build_image
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}
+      image: ghcr.io/${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ needs.meta.outputs.image_tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
