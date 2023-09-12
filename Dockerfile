@@ -8,6 +8,8 @@ LABEL author="https://github.com/witchpixels/godot4-3d-omnibuilder/graphs/contri
 ADD install_dotnet_sdk.sh /opt/scripts/install_dotnet_sdk.sh
 RUN bash /opt/scripts/install_dotnet_sdk.sh
 
+ENV PATH="/github/home/.dotnet/tools:/root/.dotnet/tools:${PATH}"
+
 # install blender and also setup blender's path in editor settings so that you can use the inbuilt blender importer
 ADD install_blender.sh /opt/scripts/install_blender.sh
 RUN bash /opt/scripts/install_blender.sh
