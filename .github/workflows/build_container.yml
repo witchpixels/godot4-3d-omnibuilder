@@ -1,0 +1,38 @@
+name: Build and Verify Container
+on:  
+  workflow_dispatch:
+  inputs:
+    version:
+      description: 'Version of engine to build, must be >4.0'     
+      required: true
+      type: string
+    release_name:
+      description: 'Release name, usually "stable", but can also be something like "rc3", "beta1"'
+      type: string
+      default: "stable"
+      required: true
+env:
+  IMAGE_NAME: godot4-omnibuilder3d
+
+jobs:
+  build:
+    name: Build Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run:  echo IMAGE_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+      - name: Login to GitHub Container Registry 
+        uses: docker/login-action@v1.14.1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run:  echo IMAGE_TAG=$(echo ${{ github.event.inputs.release_name != 'stable' && format('.{0}', github.event.inputs.release_name) || '' }}) >> $GITHUB_ENV
+      
+
+
