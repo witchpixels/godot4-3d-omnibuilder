@@ -12,11 +12,6 @@ jobs:
   meta:
     name: Determine build state
     runs-on: ubuntu-latest
-    outputs:
-      image_owner: ${{ steps.write_image_owner.image_owner }}
-      image_name: ${{ env.IMAGE_NAME }}
-      image_tag: ${{ steps.write_image_tag.image_tag }}
-      semVer: ${{ steps.gitversion.outputs.semVer }}
     steps:
       - uses: actions/checkout@v3
       # Get git version set up
@@ -36,14 +31,20 @@ jobs:
       
       - name: Write repo owner
         id: write_image_owner
-        run: echo IMAGE_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_OUTPUT
+        run: echo IMAGE_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> "$GITHUB_OUTPUT"
       
       - name: Write Image tag from Godot Version
         run:  echo IMAGE_TAG=$(echo ${{ env.RELEASE_NAME != 'stable' && format('.{0}', env.RELEASE_NAME) || '' }}) >> $GITHUB_ENV
 
       - name: Output image name for test project build
         id: write_image_tag
-        run: echo "image_tag=${{ steps.gitversion.outputs.semVer }}-${{ env.GODOT_VERSION }}${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
+        run: echo "image_tag=${{ steps.gitversion.outputs.semVer }}-${{ env.GODOT_VERSION }}${{ env.IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
+    
+    outputs:
+      image_owner: ${{ steps.write_image_owner.image_owner }}
+      image_name: ${{ env.IMAGE_NAME }}
+      image_tag: ${{ steps.write_image_tag.image_tag }}
+      semVer: ${{ steps.gitversion.outputs.semVer }}
 
   build_image:
     name: Build Image
