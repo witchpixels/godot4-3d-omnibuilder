@@ -109,7 +109,7 @@ jobs:
           mkdir -v -p build/linux
           godot -v -e --quit --headless
       - name: Linux Build
-        run: godot --headless -v --export-release "Linux/X11" build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
+        run: godot --headless -v -e --export-release "Linux/X11" build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
@@ -139,7 +139,7 @@ jobs:
           mkdir -v -p build/windows
           godot -v -e --quit --headless
       - name: Windows Build
-        run: godot --headless -v --export-release "Windows Desktop" build/windows/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
+        run: godot --headless -v -e --export-release "Windows Desktop" build/windows/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
