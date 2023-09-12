@@ -6,6 +6,8 @@ env:
   IMAGE_NAME: godot4-omnibuilder3d
   GODOT_VERSION: 4.1.1
   RELEASE_NAME: stable
+  EXPORT_NAME: omnibuilder_test_project
+  PROJECT_PATH: test_project
 jobs:
   build_image:
     name: Build Image
@@ -66,6 +68,7 @@ jobs:
       - name: Linux Build
         run: |
           cd $PROJECT_PATH
+          env
           mkdir -v -p build/linux
           godot --headless -d -v --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
       - name: Upload Artifact
@@ -79,13 +82,11 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ${{needs.build_image.outputs.image_and_tag}}
-      env:
-        EXPORT_NAME: omnibuilder_test_project
-        PROJECT_PATH: test_project
     steps:
       - name: Windows Build
         run: |
           cd $PROJECT_PATH
+          env
           mkdir -v -p build/windows
           godot --headless -v --export-release "Windows Desktop" build/windows/$EXPORT_NAME.exe
       - name: Upload Artifact
