@@ -3,8 +3,12 @@ if [[ -f "GitVersion.yml" || -f "../GitVersion.yml" ]]; then
     echo "Found GitVersion.yml"
 
     echo "We need to do a fetch here because normally we don't have tags which gitversion needs to evaluate. Don't panic, please."
-    git config --global --add safe.directory $(pwd)
-    git fetch --prune --unshallow
+    if [[ -f "GitVersion.yml" ]]; then
+        git config --global --add safe.directory $(pwd)
+    elif [[ -f "../GitVersion.yml" ]]; then
+        git config --global --add safe.directory "$(pwd)/../"
+    fi
+    git fetch --prune --unshallow || echo "Looks like that was unneeded... oh well!"
 
 
     echo "Running gitversion to retrieve FullSemVer and AssemblySemVer"
