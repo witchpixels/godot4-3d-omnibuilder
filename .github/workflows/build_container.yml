@@ -150,38 +150,3 @@ jobs:
         with:
           name: ${{ env.EXPORT_NAME }}-${{ needs.meta.outputs.semVer }}-windows
           path: build/windows
-
-  build_project_godot_ci:
-    name: Sanity test
-    needs: 
-      - meta
-    runs-on: ubuntu-latest
-    container:
-      image: witchpixels/godot4-ci:mono-4.1.1
-      env:
-        EXPORT_NAME: omnibuilder_test_project
-        PROJECT_PATH: test_project
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-      - name: Setup
-        run: |
-          mkdir -p /github/home/.local/share/godot/export_templates/
-          cp -rv /root/.local/share/godot/templates/* /github/home/.local/share/godot/export_templates
-      - name: Prebuild
-        run: |
-          mkdir -v -p build/linux
-          cd $PROJECT_PATH
-          godot -v -e --quit --headless
-      - name: Linux Build
-        run: |
-          cd $PROJECT_PATH
-          pwd
-          godot --headless -v --export-release "Linux/X11" ../build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: linux-godot-ci
-          path: build/linux
