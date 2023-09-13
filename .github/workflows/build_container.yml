@@ -115,7 +115,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
-          name: linux
+          name: ${{ envEXPORT_NAME }}-${{ needs.meta.outputs.semVer }}-linux
           path: build/linux
   
   build_project_windows:
@@ -147,7 +147,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
-          name: windows
+          name: ${{ envEXPORT_NAME }}-${{ needs.meta.outputs.semVer }}-windows
           path: build/windows
 
   build_project_godot_ci:
