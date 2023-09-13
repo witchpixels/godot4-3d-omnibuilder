@@ -5,12 +5,16 @@ namespace Witchpixels.GodotOmniBuilder.TestProject;
 
 public partial class OrbitalCamera : Node3D
 {
-    [Export]
-    public CameraOrbitComponent CameraOrbitComponent { get; set; }
+    private CameraOrbitComponent _cameraOrbitComponent;
 
+    public override void _Ready()
+    {
+        _cameraOrbitComponent = GetNode<CameraOrbitComponent>("components/CameraOrbitComponent");
+    }
+    
     public override void _Process(double delta)
     {
         base._Process(delta);
-        CameraOrbitComponent.Rotate(this, (float)delta);
+        _cameraOrbitComponent.Rotate(this, (float)delta);
     }
 }
