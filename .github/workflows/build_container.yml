@@ -104,14 +104,14 @@ jobs:
           setup.sh
       - name: Prebuild
         run: |
-          cd $PROJECT_PATH
           mkdir -v -p build/linux
+          cd $PROJECT_PATH
           godot -v -e --quit --headless
       - name: Linux Build
         run: |
           cd $PROJECT_PATH
           pwd
-          godot --headless -v --export-release "Linux/X11" build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
+          godot --headless -v --export-release "Linux/X11" ../build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
@@ -136,14 +136,14 @@ jobs:
           setup.sh
       - name: Prebuild
         run: |
-          cd $PROJECT_PATH
           mkdir -v -p build/windows
+          cd $PROJECT_PATH
           godot -v -e --quit --headless
       - name: Windows Build
         run: |
           cd $PROJECT_PATH
           pwd
-          godot --headless -v --export-release "Windows Desktop" build/windows/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
+          godot --headless -v --export-release "Windows Desktop" ../build/windows/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
@@ -171,14 +171,14 @@ jobs:
           cp -rv /root/.local/share/godot/templates/* /github/home/.local/share/godot/export_templates
       - name: Prebuild
         run: |
-          cd $PROJECT_PATH
           mkdir -v -p build/linux
+          cd $PROJECT_PATH
           godot -v -e --quit --headless
       - name: Linux Build
         run: |
           cd $PROJECT_PATH
           pwd
-          godot --headless -v --export-release "Linux/X11" build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
+          godot --headless -v --export-release "Linux/X11" ../build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
