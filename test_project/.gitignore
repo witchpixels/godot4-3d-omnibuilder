@@ -2,3 +2,5 @@
 .godot/
 .idea/
 build/
+
+*.blend*
