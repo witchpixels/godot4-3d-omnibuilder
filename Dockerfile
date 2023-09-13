@@ -1,7 +1,7 @@
 ARG GODOT_VERSION="4.1.1"
 ARG RELEASE_NAME="stable"
 
-FROM witchpixels/godot-ci:mono-${GODOT_VERSION}
+FROM witchpixels/godot4-ci:mono-${GODOT_VERSION}
 LABEL author="https://github.com/witchpixels/godot4-3d-omnibuilder/graphs/contributors"
 
 # install dotnet-sdk
