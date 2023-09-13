@@ -156,7 +156,7 @@ jobs:
       - meta
     runs-on: ubuntu-latest
     container:
-      image: witchpixels/godot4-ci:mono-${{ env.GODOT_VERSION }}
+      image: witchpixels/godot4-ci:mono-4.1.1
       env:
         EXPORT_NAME: omnibuilder_test_project
         PROJECT_PATH: test_project
