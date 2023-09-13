@@ -112,6 +112,7 @@ jobs:
           cd $PROJECT_PATH
           pwd
           godot --headless -v --export-release "Linux/X11" ../build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
+          chmod +x ../build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
