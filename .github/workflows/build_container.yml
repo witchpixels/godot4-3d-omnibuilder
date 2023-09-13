@@ -115,7 +115,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
-          name: ${{ envEXPORT_NAME }}-${{ needs.meta.outputs.semVer }}-linux
+          name: ${{ env.EXPORT_NAME }}-${{ needs.meta.outputs.semVer }}-linux
           path: build/linux
   
   build_project_windows:
@@ -147,7 +147,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
-          name: ${{ envEXPORT_NAME }}-${{ needs.meta.outputs.semVer }}-windows
+          name: ${{ env.EXPORT_NAME }}-${{ needs.meta.outputs.semVer }}-windows
           path: build/windows
 
   build_project_godot_ci:
@@ -156,7 +156,7 @@ jobs:
       - meta
     runs-on: ubuntu-latest
     container:
-      image: witchpixels/godot4-ci:mono-4.1.1
+      image: witchpixels/godot4-ci:mono-${{ env.GODOT_VERSION }}
       env:
         EXPORT_NAME: omnibuilder_test_project
         PROJECT_PATH: test_project
