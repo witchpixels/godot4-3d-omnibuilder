@@ -14,6 +14,8 @@ ENV PATH="/github/home/.dotnet/tools:/root/.dotnet/tools:${PATH}"
 ADD install_blender.sh /opt/scripts/install_blender.sh
 RUN bash /opt/scripts/install_blender.sh
 
+ENV PATH="/opt/blender:${PATH}"
+
 ADD setup_blender_editor_path.sh /opt/scripts/setup_blender_editor_path.sh
 
 # A tool we use for pulling apart version strings
