@@ -4,7 +4,7 @@ on:
     branches: [ "main" ]
 env:
   IMAGE_NAME: godot4-omnibuilder3d
-  GODOT_VERSION: 4.1.1
+  GODOT_VERSION: 4.1
   RELEASE_NAME: stable
   EXPORT_NAME: omnibuilder_test_project
   PROJECT_PATH: test_project
