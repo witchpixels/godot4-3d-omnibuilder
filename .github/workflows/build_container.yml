@@ -144,7 +144,7 @@ jobs:
           name: windows
           path: build/windows
 
-  build_project_linux:
+  build_project_godot_ci:
     name: Sanity test
     needs: 
       - meta
