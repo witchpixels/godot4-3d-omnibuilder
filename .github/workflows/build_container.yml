@@ -168,7 +168,7 @@ jobs:
       - name: Setup
         run: |
           mkdir -p /github/home/.local/share/godot/export_templates/
-          cp -rv /root/.local/share/godot/templates/ /github/home/.local/share/godot/export_templates/
+          cp -rv /root/.local/share/godot/templates/* /github/home/.local/share/godot/export_templates
       - name: Prebuild
         run: |
           cd $PROJECT_PATH
