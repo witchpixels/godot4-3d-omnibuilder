@@ -161,7 +161,7 @@ jobs:
           lfs: true
       - name: Setup
         run: |
-          cp -rv /root/.local/share/godot/templates/$GODOT_VERSION.$RELEASE_NAME.mono /github/home/.local/share/godot/export_templates/$GODOT_VERSION.$RELEASE_NAME.mono
+          cp -rv /root/.local/share/godot/templates/ /github/home/.local/share/godot/export_templates/
       - name: Prebuild
         run: |
           cd $PROJECT_PATH
