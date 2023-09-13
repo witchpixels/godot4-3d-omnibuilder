@@ -169,7 +169,9 @@ jobs:
           mkdir -v -p build/linux
           godot -v -e --quit --headless
       - name: Linux Build
-        run: godot --headless -v --export-release "Linux/X11" build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
+        run: |
+          pwd
+          godot --headless -v --export-release "Linux/X11" build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
