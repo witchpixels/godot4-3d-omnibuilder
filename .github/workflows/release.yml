@@ -1,0 +1,89 @@
+name: Release Container
+on:
+  push:
+    tags:
+      - v*
+env:
+  IMAGE_NAME: godot4-omnibuilder3d
+jobs:
+  meta:
+    name: Determine build state
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Fetch all history for all tags and branches
+        run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          git fetch --prune --unshallow
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0
+        with:
+          versionSpec: '5.x'
+      - name: Determine Version
+        uses: gittools/actions/gitversion/execute@v0
+        id: gitversion
+        with:
+          useConfigFile: true
+      - name: Write repo owner
+        id: write_image_owner
+        run: echo IMAGE_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+    outputs:
+      image_owner: ${{ env.IMAGE_OWNER }}
+      image_name: ${{ env.IMAGE_NAME }}
+      semVer: ${{ steps.gitversion.outputs.semVer }}
+
+  build_images:
+    strategy:
+      matrix:
+        include:
+          - godot_version: 4.1.1
+            release_name: stable
+          - godot_version: 4.0.3
+            release_name: stable
+    name: Build Image
+    runs-on: ubuntu-latest
+    needs: meta
+    steps:
+      - name: Show outputed state
+        run: |
+          echo image owner: ${{ needs.meta.outputs.image_owner }}
+          echo image name:  ${{ needs.meta.outputs.image_name }}
+          echo semver:      ${{ needs.meta.outputs.semVer }}
+
+      - name: Write Image tag from Godot Version
+        run:  echo IMAGE_TAG=$(echo ${{ matrix.release_name != 'stable' && format('.{0}', matrix.release_name) || '' }}) >> $GITHUB_ENV
+
+      - name: Output image name for test project build
+        id: write_image_tag
+        run: |
+          echo "VERSIONED_IMAGE_TAG=${{ needs.meta.outputs.semVer }}-${{ matrix.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
+          echo "LATEST_IMAGE_TAG=latest-${{ matrix.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v3
+      - name: Login to GitHub Container Registry 
+        uses: docker/login-action@v1.14.1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v2.9.0
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ env.VERSIONED_IMAGE_TAG }}
+            ghcr.io/${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ env.LATEST_IMAGE_TAG }}
+            ${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ env.VERSIONED_IMAGE_TAG }}
+            ${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ env.LATEST_IMAGE_TAG }}
+          build-args: |
+            GODOT_VERSION=${{ matrix.godot_version }}
+            RELEASE_NAME=${{ matrix.release_name }}
