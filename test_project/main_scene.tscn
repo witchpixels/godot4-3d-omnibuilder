@@ -1,8 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://dm7aywol8fq5c"]
+[gd_scene load_steps=12 format=3 uid="uid://dm7aywol8fq5c"]
 
+[ext_resource type="Script" path="res://src/OrbitalCamera.cs" id="1_papvg"]
 [ext_resource type="Script" path="res://src/CameraOrbitComponent.cs" id="1_pmxok"]
 [ext_resource type="Texture2D" uid="uid://cfs70tgp0fjlb" path="res://icon.png" id="2_hvmyp"]
-[ext_resource type="PackedScene" uid="uid://c7my5wqcx0i4r" path="res://d_20.tscn" id="3_s2vwk"]
+[ext_resource type="PackedScene" path="res://d_20.tscn" id="3_s2vwk"]
 
 [sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_dr0cc"]
 rayleigh_coefficient = 13.06
@@ -49,16 +50,16 @@ camera_attributes = SubResource("CameraAttributesPractical_bda14")
 transform = Transform3D(0.465893, 0.595806, -0.654186, 0, 0.739326, 0.673348, 0.884841, -0.313708, 0.344446, 0, 0, 0)
 
 [node name="OrbitalCamera" type="Node3D" parent="."]
+script = ExtResource("1_papvg")
 
 [node name="Camera3D" type="Camera3D" parent="OrbitalCamera"]
 transform = Transform3D(1, 0, 0, 0, 0.875456, 0.483298, 0, -0.483298, 0.875456, 0, 1.77729, 4.55083)
 
 [node name="components" type="Node" parent="OrbitalCamera"]
 
-[node name="CameraOrbitComponent" type="Node" parent="OrbitalCamera/components" node_paths=PackedStringArray("_orbitalRoot")]
+[node name="CameraOrbitComponent" type="Node" parent="OrbitalCamera/components"]
 script = ExtResource("1_pmxok")
 _degreesPerSecond = 0.5
-_orbitalRoot = NodePath("../..")
 
 [node name="Plane" type="MeshInstance3D" parent="."]
 mesh = SubResource("PlaneMesh_s1uk7")

@@ -1,26 +1,20 @@
 name: Build and Verify Container
-on:  
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version of engine to build, must be >4.0'     
-        required: true
-        type: string
-      release_name:
-        description: 'Release name, usually "stable", but can also be something like "rc3", "beta1"'
-        type: string
-        default: "stable"
-        required: true
+on:
+  pull_request:
+    branches: [ "main" ]
 env:
   IMAGE_NAME: godot4-omnibuilder3d
+  GODOT_VERSION: 4.1.1
+  RELEASE_NAME: stable
+  EXPORT_NAME: omnibuilder_test_project
+  PROJECT_PATH: test_project
 jobs:
-  build:
-    name: Build Image
+  meta:
+    name: Determine build state
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      # Bunch of stuff to make GitVersion Work
+      # Get git version set up
       - name: Fetch all history for all tags and branches
         run: |
           git config --global --add safe.directory $GITHUB_WORKSPACE
@@ -34,7 +28,37 @@ jobs:
         id: gitversion
         with:
           useConfigFile: true
-      - run:  echo IMAGE_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+      
+      - name: Write repo owner
+        id: write_image_owner
+        run: echo IMAGE_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+      
+      - name: Write Image tag from Godot Version
+        run:  echo IMAGE_TAG=$(echo ${{ env.RELEASE_NAME != 'stable' && format('.{0}', env.RELEASE_NAME) || '' }}) >> $GITHUB_ENV
+
+      - name: Output image name for test project build
+        id: write_image_tag
+        run: echo "FINAL_IMAGE_TAG=${{ steps.gitversion.outputs.semVer }}-${{ env.GODOT_VERSION }}${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
+    
+    outputs:
+      image_owner: ${{ env.IMAGE_OWNER }}
+      image_name: ${{ env.IMAGE_NAME }}
+      image_tag: ${{ env.FINAL_IMAGE_TAG }}
+      semVer: ${{ steps.gitversion.outputs.semVer }}
+
+  build_image:
+    name: Build Image
+    runs-on: ubuntu-latest
+    needs: meta
+    steps:
+      - name: Show outputed state
+        run: |
+          echo image owner: ${{ needs.meta.outputs.image_owner }}
+          echo image name:  ${{ needs.meta.outputs.image_name }}
+          echo image tag:   ${{ needs.meta.outputs.image_tag }}
+          echo semver:      ${{ needs.meta.outputs.semVer }}
+
+      - uses: actions/checkout@v3
       - name: Login to GitHub Container Registry 
         uses: docker/login-action@v1.14.1
         with:
@@ -46,18 +70,83 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run:  echo IMAGE_TAG=$(echo ${{ github.event.inputs.release_name != 'stable' && format('.{0}', github.event.inputs.release_name) || '' }}) >> $GITHUB_ENV
       - name: Build and push Docker images
         uses: docker/build-push-action@v2.9.0
         with:
           context: .
           file: Dockerfile
-          push: false
+          push: true
           tags: |
-            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:latest-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}
-            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{steps.gitversion.outputs.semVer}}${{steps.gitversion.outputs.preReleaseTagWithDash}}-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{steps.gitversion.outputs.semVer}}${{steps.gitversion.outputs.preReleaseTagWithDash}}-${{ github.event.inputs.version }}${{ env.IMAGE_TAG }}
+            ghcr.io/${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ needs.meta.outputs.image_tag }}
           build-args: |
-            GODOT_VERSION=${{ github.event.inputs.version }}
-            RELEASE_NAME=${{ github.event.inputs.release_name }}
+            GODOT_VERSION=${{ env.GODOT_VERSION }}
+            RELEASE_NAME=${{ env.RELEASE_NAME }}
+    
+  
+  build_project_linux:
+    name: Build Test Project (Linux)
+    needs: 
+      - meta
+      - build_image
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ needs.meta.outputs.image_tag }}
+      env:
+        EXPORT_NAME: omnibuilder_test_project
+        PROJECT_PATH: test_project
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+      - name: Setup
+        run: |
+          setup.sh
+      - name: Prebuild
+        run: |
+          mkdir -v -p build/linux
+          cd $PROJECT_PATH
+          godot -v -e --quit --headless
+      - name: Linux Build
+        run: |
+          cd $PROJECT_PATH
+          pwd
+          godot --headless -v --export-release "Linux/X11" ../build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
+          chmod +x ../build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ env.EXPORT_NAME }}-${{ needs.meta.outputs.semVer }}-linux
+          path: build/linux
+  
+  build_project_windows:
+    name: Build Test Project (Windows Desktop)
+    needs: 
+      - meta
+      - build_image
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ needs.meta.outputs.image_tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+      - name: Setup
+        run: |
+          setup.sh
+      - name: Prebuild
+        run: |
+          mkdir -v -p build/windows
+          cd $PROJECT_PATH
+          godot -v -e --quit --headless
+      - name: Windows Build
+        run: |
+          cd $PROJECT_PATH
+          pwd
+          godot --headless -v --export-release "Windows Desktop" ../build/windows/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ env.EXPORT_NAME }}-${{ needs.meta.outputs.semVer }}-windows
+          path: build/windows
