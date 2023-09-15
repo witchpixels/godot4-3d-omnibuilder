@@ -238,3 +238,12 @@ jobs:
           name: ${{ env.EXPORT_NAME }}-windows
           path: build/windows
 ```
+This script just needs to run before your export.
+
+## Contributing
+
+The main thing I was solving for is getting a one stop solution for using C# on a 3d Game, however if there are other tools that would be beneficial to be pathed in, I'd be happy to add them, or accept PRs that include them.
+
+One note, though:
+
+If you add a new tool, please add something that can be verified in `test_project/validate_imports.sh` to test that it is working. Add any needed addons to the test project as needed, it doesn't need to be pretty.
