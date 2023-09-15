@@ -1,4 +1,7 @@
 #!/bin/bash
+
+godot -v -e --quit --headless
+
 echo $(which blender)
 echo "EDITOR SETTINGS BEFORE ---------------------------------"
 cat ~/.config/godot/editor_settings-4.tres

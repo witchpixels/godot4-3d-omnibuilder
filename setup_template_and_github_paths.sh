@@ -14,8 +14,6 @@ cp -rv /root/.local/share/godot/templates/* /github/home/.local/share/godot/expo
 ls -la /github/home/.local/share/godot/export_templates/
 ls -la /root/.local/share/godot/export_templates/
 
-# Similarily, we need to do this with the editor settings
-godot -v -e --quit --headless
-
+# in the case of github actions runner, se need to copy the editor settings
 mkdir -v -p /github/home/.config/godot/
-cp /root/.config/godot/editor_settings-4.tres /github/home/.config/godot/editor_settings-4.tres
+cp /root/.config/godot/* /github/home/.config/godot/
