@@ -102,6 +102,7 @@ jobs:
 
       - name: Prebuild
         run: |
+          env
           cat ~/.config/godot/editor_settings-4.tres
           mkdir -v -p build/linux
           cd $PROJECT_PATH
@@ -138,6 +139,7 @@ jobs:
 
       - name: Prebuild
         run: |
+          env
           cat ~/.config/godot/editor_settings-4.tres
           mkdir -v -p build/windows
           cd $PROJECT_PATH
