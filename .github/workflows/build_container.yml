@@ -100,13 +100,21 @@ jobs:
         with:
           lfs: true
 
+
+      - name: Show environment
+        run: env
+
+      - name: Show editor settings
+        run: cat ~/.config/godot/editor_settings-4.tres
+
       - name: Prebuild
         run: |
-          env
-          cat ~/.config/godot/editor_settings-4.tres
           mkdir -v -p build/linux
           cd $PROJECT_PATH
           godot -v -e --quit --headless
+
+      - name: Show imported asset directory
+        run: ls -la $PROJECT_PATH/.godot/imported
 
       - name: Validate that blender files were imported
         run: |
@@ -137,13 +145,20 @@ jobs:
         with:
           lfs: true
 
+      - name: Show environment
+        run: env
+
+      - name: Show editor settings
+        run: cat ~/.config/godot/editor_settings-4.tres
+
       - name: Prebuild
         run: |
-          env
-          cat ~/.config/godot/editor_settings-4.tres
           mkdir -v -p build/windows
           cd $PROJECT_PATH
           godot -v -e --quit --headless
+
+      - name: Show imported asset directory
+        run: ls -la $PROJECT_PATH/.godot/imported
 
       - name: Validate that blender files were imported
         run: |
