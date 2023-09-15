@@ -16,4 +16,4 @@ ls -la /root/.local/share/godot/export_templates/
 
 # in the case of github actions runner, se need to copy the editor settings
 mkdir -v -p /github/home/.config/godot/
-cp /root/.config/godot/* /github/home/.config/godot/
+cp -rv /root/.config/godot/* /github/home/.config/godot/
