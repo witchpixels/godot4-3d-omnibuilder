@@ -37,12 +37,18 @@ jobs:
         uses: actions/checkout@v2
         with:
           lfs: true
+
+      - name: Fix paths for Github
+        run: setup_github_paths.sh
+
       - name: Import assets
         run: godot -v -e --quit --headless
+
       - name: Linux Build
         run: |
           mkdir -v -p build/linux
           godot --headless -v --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
@@ -59,12 +65,18 @@ jobs:
         uses: actions/checkout@v2
         with:
           lfs: true
+
+      - name: Fix paths for Github
+        run: setup_github_paths.sh
+
       - name: Import assets
         run: godot -v -e --quit --headless
+
       - name: Windows Build
         run: |
           mkdir -v -p build/windows
           godot --headless -v --export-release "Windows Desktop" build/windows/$EXPORT_NAME.x86_64
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
@@ -95,14 +107,21 @@ jobs:
         uses: actions/checkout@v2
         with:
           lfs: true
+
+      - name: Fix paths for Github
+        run: setup_github_paths.sh
+
       - name: Install Blender
         run: install_blender.sh 3.6.2
+
       - name: Import assets
         run: godot -v -e --quit --headless
+
       - name: Linux Build
         run: |
           mkdir -v -p build/linux
           godot --headless -v --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
@@ -119,14 +138,21 @@ jobs:
         uses: actions/checkout@v2
         with:
           lfs: true
+
+      - name: Fix paths for Github
+        run: setup_github_paths.sh
+
       - name: Install Blender
         run: install_blender.sh 3.6.2
+
       - name: Import assets
         run: godot -v -e --quit --headless
+
       - name: Windows Build
         run: |
           mkdir -v -p build/windows
           godot --headless -v --export-release "Windows Desktop" build/windows/$EXPORT_NAME.x86_64
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
@@ -160,14 +186,21 @@ jobs:
         uses: actions/checkout@v2
         with:
           lfs: true
+
+      - name: Fix paths for Github
+        run: setup_github_paths.sh
+
       - name: Import assets
         run: godot -v -e --quit --headless
+
       - name: Stamp Versions
         run: apply_version_info.sh
+
       - name: Linux Build
         run: |
           mkdir -v -p build/linux
           godot --headless -v --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
@@ -184,14 +217,21 @@ jobs:
         uses: actions/checkout@v2
         with:
           lfs: true
+
+      - name: Fix paths for Github
+        run: setup_github_paths.sh
+
       - name: Import assets
         run: godot -v -e --quit --headless
+
       - name: Stamp Versions
         run: apply_version_info.sh
+
       - name: Windows Build
         run: |
           mkdir -v -p build/windows
           godot --headless -v --export-release "Windows Desktop" build/windows/$EXPORT_NAME.x86_64
+          
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
