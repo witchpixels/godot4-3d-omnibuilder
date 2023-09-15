@@ -99,20 +99,34 @@ jobs:
         uses: actions/checkout@v2
         with:
           lfs: true
-      - name: Setup
-        run: |
-          setup.sh
+
+      - name: Fix paths for Github
+        run: setup_github_paths.sh
+
+      - name: Show environment
+        run: env
+
+      - name: Show editor settings
+        run: cat ~/.config/godot/editor_settings-4.tres
+
       - name: Prebuild
         run: |
           mkdir -v -p build/linux
           cd $PROJECT_PATH
           godot -v -e --quit --headless
+
+      - name: Show imported asset directory
+        run: ls -la $PROJECT_PATH/.godot/imported
+
+      - name: Validate that blender files were imported
+        run: |
+          cd $PROJECT_PATH
+          ./validate_imports.sh
+
       - name: Linux Build
         run: |
           cd $PROJECT_PATH
-          pwd
           godot --headless -v --export-release "Linux/X11" ../build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
-          chmod +x ../build/linux/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
@@ -132,18 +146,33 @@ jobs:
         uses: actions/checkout@v2
         with:
           lfs: true
-      - name: Setup
-        run: |
-          setup.sh
+
+      - name: Fix paths for Github
+        run: setup_github_paths.sh
+
+      - name: Show environment
+        run: env
+
+      - name: Show editor settings
+        run: cat ~/.config/godot/editor_settings-4.tres
+
       - name: Prebuild
         run: |
           mkdir -v -p build/windows
           cd $PROJECT_PATH
           godot -v -e --quit --headless
+
+      - name: Show imported asset directory
+        run: ls -la $PROJECT_PATH/.godot/imported
+
+      - name: Validate that blender files were imported
+        run: |
+          cd $PROJECT_PATH
+          ./validate_imports.sh
+          
       - name: Windows Build
         run: |
           cd $PROJECT_PATH
-          pwd
           godot --headless -v --export-release "Windows Desktop" ../build/windows/$EXPORT_NAME-${{ needs.meta.outputs.semVer }}.x86_64
       - name: Upload Artifact
         uses: actions/upload-artifact@v1

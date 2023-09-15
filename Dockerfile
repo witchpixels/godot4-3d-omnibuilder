@@ -10,22 +10,32 @@ RUN bash /opt/scripts/install_dotnet_sdk.sh
 
 ENV PATH="/github/home/.dotnet/tools:/root/.dotnet/tools:${PATH}"
 
-# install blender and also setup blender's path in editor settings so that you can use the inbuilt blender importer
-ADD install_blender.sh /opt/scripts/install_blender.sh
-RUN bash /opt/scripts/install_blender.sh
-
-ENV PATH="/opt/blender:${PATH}"
-
-ADD setup_blender_editor_path.sh /opt/scripts/setup_blender_editor_path.sh
+RUN apt update
 
 # A tool we use for pulling apart version strings
 RUN apt install -y jq
 
-# Some paths produced in the image are incorrect, and others need to be fixed up specifically for github
-ADD setup_template_and_github_paths.sh /opt/scripts/setup_template_and_github_paths.sh
+# install the dependencies for blender
+RUN apt install -y xorg
+RUN apt install -y xz-utils
 
-# This is the script that the end user will be using
-ADD setup.sh /opt/scripts/setup.sh
+# install blender and also setup blender's path in editor settings so that you can use the inbuilt blender importer
+ENV BLENDER_VERSION="3.6.0"
+
+ADD install_blender.sh /opt/scripts/install_blender.sh
+RUN bash /opt/scripts/install_blender.sh
+
+ENV PATH="/opt/blender:${PATH}"
+ADD setup_blender_editor_path.sh /opt/scripts/setup_blender_editor_path.sh
+RUN bash /opt/scripts/setup_blender_editor_path.sh
+
+# Some paths produced in the image are incorrect
+ADD setup_templates.sh /opt/scripts/setup_templates.sh
+RUN bash /opt/scripts/setup_templates.sh
+
+# This script is there to fixup paths for github runners, which annoyingly 
+# seem to nuke the home dir we preconfigured in previous versions.
+ADD setup_github_paths.sh /opt/scripts/setup_github_paths.sh 
 
 # Finally, the optional script to stamp versions if you need it
 ADD apply_version_info.sh /opt/scripts/apply_version_info.sh

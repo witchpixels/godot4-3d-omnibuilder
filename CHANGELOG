@@ -1,0 +1,21 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+Initial Release
+
+### Added
+    * Docker Image that builds off of [aBarichello's godot-ci project](https://github.com/abarichello/godot-ci/) including the following additional tools:
+        * dotnet sdk 6.0
+        * dotnet-gitversion for version management
+        * blender 3.6.0
+        * helper scripts for stamping versions, installing additonal blender versions
+        * helper tools for dealing with path disparity between GitLab and Github runners
+    * A test project to verify the container builds as expected with a semi-automated pass/fail (still kinda needs visual confirmation)
+
+[unreleased]: https://github.com/witchpixels/godot4-3d-omnibuilder/
