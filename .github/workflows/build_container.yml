@@ -107,6 +107,10 @@ jobs:
           mkdir -v -p build/linux
           cd $PROJECT_PATH
           godot -v -e --quit --headless
+      - name: Validate that blender files were imported
+        run: |
+          cd $PROJECT_PATH
+          ./validate_imports.sh
       - name: Linux Build
         run: |
           cd $PROJECT_PATH
@@ -140,6 +144,10 @@ jobs:
           mkdir -v -p build/windows
           cd $PROJECT_PATH
           godot -v -e --quit --headless
+      - name: Validate that blender files were imported
+        run: |
+          cd $PROJECT_PATH
+          ./validate_imports.sh
       - name: Windows Build
         run: |
           cd $PROJECT_PATH
