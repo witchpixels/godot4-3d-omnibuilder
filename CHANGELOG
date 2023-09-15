@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0]
+
 Initial Release
 
 ### Added
@@ -17,5 +19,9 @@ Initial Release
         * helper scripts for stamping versions, installing additonal blender versions
         * helper tools for dealing with path disparity between GitLab and Github runners
     * A test project to verify the container builds as expected with a semi-automated pass/fail (still kinda needs visual confirmation)
+    * Added release pipeline to push to following godot versions
+        * 4.0.3 stable
+        * 4.1.1 stable
 
-[unreleased]: https://github.com/witchpixels/godot4-3d-omnibuilder/
+[unreleased]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/witchpixels/godot4-3d-omnibuilder/releases/tag/v1.0.0
