@@ -20,3 +20,7 @@ config/version="0.0.0-unset"
 [dotnet]
 
 project/assembly_name="test_project"
+
+[filesystem]
+
+import/fbx/enabled=true
