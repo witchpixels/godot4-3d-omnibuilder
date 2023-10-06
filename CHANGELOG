@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0]
+
+### Added
+    * Support for fbx import using FBX2glTF @[Terrence Drumm](https://github.com/TDogVoid)
+
+### Changed
+    * Remove a docker login step from the CI pipeline that is both unneeded and will always fail on a PR from anyone but the repo owner.
+
 ## [1.0.0]
 
 Initial Release
@@ -23,5 +31,6 @@ Initial Release
         * 4.0.3 stable
         * 4.1.1 stable
 
-[unreleased]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v1.0.0...HEAD
+[unreleased]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/witchpixels/godot4-3d-omnibuilder/releases/tag/v1.0.0
