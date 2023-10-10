@@ -1,4 +1,4 @@
-ARG GODOT_VERSION="4.1.1"
+ARG GODOT_VERSION="4.1.2"
 ARG RELEASE_NAME="stable"
 
 FROM witchpixels/godot4-ci:mono-${GODOT_VERSION}
