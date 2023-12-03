@@ -5,9 +5,11 @@ on:
       sem_ver:
         description: "Semantic version of this repository"
         required: true
+        type: string
       build_image:
         description: The image to build the projects against
         required: true
+        type: string
 env:
   EXPORT_NAME: omnibuilder_test_project
   PROJECT_PATH: test_project

@@ -5,17 +5,21 @@ on:
       sem_ver:
         description: "Semantic version of this repository"
         required: true
+        type: string
       godot_version:
         description: Godot Version Semver
         default: "4.0.0"
         required: true
+        type: string
       release_name: 
         description: Release tag, ie stable, rc1, dev, ect
         default: stable
         required: true
+        type: string
       release_image:
         description: Whether or not to push this image to dockerhub
         default: false
+        type: boolean
     outputs:
       github_image_name_and_tag:
         description: Name and tag of the image that was built
