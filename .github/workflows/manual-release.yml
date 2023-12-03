@@ -45,3 +45,4 @@ jobs:
       godot_version: ${{ inputs.godot_version }}
       release_name: ${{ inputs.release_name }}
       release_image: true
+    secrets: inherit

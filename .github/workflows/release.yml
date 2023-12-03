@@ -27,3 +27,4 @@ jobs:
       godot_version: ${{ matrix.godot_version }}
       release_name: ${{ matrix.release_name }}
       release_image: true
+    secrets: inherit
