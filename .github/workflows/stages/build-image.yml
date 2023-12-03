@@ -1,0 +1,94 @@
+name: Build Image
+on:
+  workflow_call:
+    inputs:
+      sem_ver:
+        description: "Semantic version of this repository"
+        required: true
+      godot_version:
+        description: Godot Version Semver
+        default: "4.0.0"
+        required: true
+      release_name: 
+        description: Release tag, ie stable, rc1, dev, ect
+        default: stable
+        required: true
+      release_image:
+        description: Whether or not to push this image to dockerhub
+        default: false
+    outputs:
+      github_image_name_and_tag:
+        description: Name and tag of the image that was built
+        value: ${{ jobs.build_image.outputs.github_image_name_and_tag }}
+      
+env:
+  IMAGE_NAME: godot4-omnibuilder3d
+jobs:
+  build_image:
+    name: Build Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write repo owner
+        id: write_image_owner
+        run: echo IMAGE_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+      
+      - name: Write Image tag from Godot Version
+        run:  echo IMAGE_TAG=$(echo ${{ inputs.release_name != 'stable' && format('.{0}', inputs.release_name) || '' }}) >> $GITHUB_ENV
+
+      - name: Output image name for test project build
+        id: write_image_tag
+        run: echo "FINAL_IMAGE_TAG=${{ inputs.sem_ver }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
+
+      - name: Write Image tag from Godot Version
+        run:  echo IMAGE_TAG=$(echo ${{ inputs.release_name != 'stable' && format('.{0}', inputs.release_name) || '' }}) >> $GITHUB_ENV
+
+      - name: Output image name for test project build
+        id: write_image_tag
+        run: |
+          echo "VERSIONED_IMAGE_TAG=${{ needs.meta.outputs.semVer }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
+          echo "LATEST_IMAGE_TAG=latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v3
+      - name: Login to GitHub Container Registry 
+        uses: docker/login-action@v1.14.1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to DockerHub
+        if: ${{ inputs.release_image }}
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker images to Github
+        uses: docker/build-push-action@v2.9.0
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ env.VERSIONED_IMAGE_TAG }}
+          build-args: |
+            GODOT_VERSION=${{ inputs.godot_version }}
+            RELEASE_NAME=${{ inputs.release_name }}
+        outputs:
+          github_image_name_and_tag: ghcr.io/${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ env.VERSIONED_IMAGE_TAG }}
+
+      - name: Build and Release Docker images to Dockerhub
+        if: ${{ inputs.release_image }}
+        uses: docker/build-push-action@v2.9.0
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ env.VERSIONED_IMAGE_TAG }}
+            ${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ env.LATEST_IMAGE_TAG }}
+          build-args: |
+            GODOT_VERSION=${{ inputs.godot_version }}
+            RELEASE_NAME=${{ inputs.release_name }}
+        outputs:
+          image_name_and_tag: ${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ env.VERSIONED_IMAGE_TAG }}
