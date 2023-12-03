@@ -8,8 +8,8 @@ env:
 
 jobs:
   determine_version:
-    uses: ./.github/workflows/stages/determine-version.yml
-    
+    uses: ./.github/workflows/determine-version.yml
+
   build_image:
     needs: determine_version
     uses: ./.github/workflows/build-image.yml
