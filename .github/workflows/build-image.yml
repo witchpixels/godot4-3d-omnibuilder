@@ -87,6 +87,10 @@ jobs:
             RELEASE_NAME=${{ inputs.release_name }}
 
       - name: Collect outputs
+        id: collect_outputs
         run: |
           echo github_image_name_and_tag=ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VERSIONED_IMAGE_TAG }} >> $GITHUB_OUTPUT
           echo image_name_and_tag=${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VERSIONED_IMAGE_TAG }} >> $GITHUB_OUTPUT
+    outputs:
+      github_image_name_and_tag: ${{ steps.collect_outputs.outputs.github_image_name_and_tag }}
+      image_name_and_tag: ${{ steps.collect_outputs.outputs.image_name_and_tag }}
