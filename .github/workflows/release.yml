@@ -25,5 +25,5 @@ jobs:
     with:
       sem_ver: ${{ needs.determine_version.outputs.sem_ver }}
       godot_version: ${{ matrix.godot_version }}
-      releave_name: ${{ matrix.release_name }}
+      release_name: ${{ matrix.release_name }}
       release_image: true
