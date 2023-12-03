@@ -8,19 +8,22 @@ env:
 
 jobs:
   determine_version:
-    uses: ./stages/determine-version.yml
+    uses: ./.github/workflows/stages/determine-version.yml
+    
   build_image:
     needs: determine_version
-    uses: ./stages/build-image.yml
+    uses: ./.github/workflows/build-image.yml
     with:
       sem_ver: ${{ needs.determine_version.outputs.sem_ver }}
       godot_version: ${{ env.GODOT_VERSION }}
       releave_name: ${{ env.RELEASE_NAME }}
       release_image: false
+
   build_projects:
     needs:
       - determine_version
       - build_image
+    uses: ./.github/workflows/build-projects.yml
     with:
       sem_ver: ${{ needs.determine_version.outputs.sem_ver }}
       build_image: ${{ needs.build_image.outputs.github_image_name_and_tag }}

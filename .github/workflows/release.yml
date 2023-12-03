@@ -8,7 +8,8 @@ env:
 jobs:
 
   determine_version:
-    uses: ./stages/determine-version.yml
+    uses: ./.github/workflows/determine-version.yml
+
   build_image:
     strategy:
       matrix:
@@ -20,7 +21,7 @@ jobs:
           - godot_version: 4.0.3
             release_name: stable
     needs: determine_version
-    uses: ./stages/build-image.yml
+    uses: ./.github/workflows/build-image.yml
     with:
       sem_ver: ${{ needs.determine_version.outputs.sem_ver }}
       godot_version: ${{ matrix.godot_version }}
