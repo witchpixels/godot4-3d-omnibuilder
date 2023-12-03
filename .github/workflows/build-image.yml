@@ -41,15 +41,8 @@ jobs:
 
       - name: Output image name for test project build
         id: write_image_tag
-        run: echo "FINAL_IMAGE_TAG=${{ inputs.sem_ver }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
-
-      - name: Write Image tag from Godot Version
-        run:  echo IMAGE_TAG=$(echo ${{ inputs.release_name != 'stable' && format('.{0}', inputs.release_name) || '' }}) >> $GITHUB_ENV
-
-      - name: Output image name for test project build
-        id: write_image_tag
         run: |
-          echo "VERSIONED_IMAGE_TAG=${{ needs.meta.outputs.semVer }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
+          echo "VERSIONED_IMAGE_TAG=${{ inputs.sem_ver }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
           echo "LATEST_IMAGE_TAG=latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v3
@@ -74,12 +67,12 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ env.VERSIONED_IMAGE_TAG }}
+            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VERSIONED_IMAGE_TAG }}
           build-args: |
             GODOT_VERSION=${{ inputs.godot_version }}
             RELEASE_NAME=${{ inputs.release_name }}
         outputs:
-          github_image_name_and_tag: ghcr.io/${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ env.VERSIONED_IMAGE_TAG }}
+          github_image_name_and_tag: ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VERSIONED_IMAGE_TAG }}
 
       - name: Build and Release Docker images to Dockerhub
         if: ${{ inputs.release_image }}
@@ -89,10 +82,10 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            ${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ env.VERSIONED_IMAGE_TAG }}
-            ${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ env.LATEST_IMAGE_TAG }}
+            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VERSIONED_IMAGE_TAG }}
+            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }}
           build-args: |
             GODOT_VERSION=${{ inputs.godot_version }}
             RELEASE_NAME=${{ inputs.release_name }}
         outputs:
-          image_name_and_tag: ${{ needs.meta.outputs.image_owner }}/${{ needs.meta.outputs.image_name }}:${{ env.VERSIONED_IMAGE_TAG }}
+          image_name_and_tag: ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VERSIONED_IMAGE_TAG }}
