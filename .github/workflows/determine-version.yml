@@ -1,0 +1,30 @@
+name: Determine Build Metadata
+on: 
+  workflow_call:
+    outputs:
+      sem_ver:
+        description: "The version of the repository as determined by GitVersion"
+        value: ${{ jobs.meta.outputs.semVer }}
+
+jobs:
+  meta:
+    name: Determine build state
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # Get git version set up
+      - name: Fetch all history for all tags and branches
+        run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          git fetch --prune --unshallow
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0
+        with:
+          versionSpec: '5.x'
+      - name: Determine Version
+        uses: gittools/actions/gitversion/execute@v0
+        id: gitversion
+        with:
+          useConfigFile: true
+    outputs:
+      semVer: ${{ steps.gitversion.outputs.semVer }}

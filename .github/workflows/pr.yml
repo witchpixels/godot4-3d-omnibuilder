@@ -1,0 +1,26 @@
+name: Build and Verify Container
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  determine_version:
+    uses: ./.github/workflows/determine-version.yml
+
+  build_image:
+    needs: determine_version
+    uses: ./.github/workflows/build-image.yml
+    with:
+      sem_ver: ${{ needs.determine_version.outputs.sem_ver }}
+      godot_version: 4.2
+      release_name: stable
+      release_image: false
+
+  build_projects:
+    needs:
+      - determine_version
+      - build_image
+    uses: ./.github/workflows/build-projects.yml
+    with:
+      sem_ver: ${{ needs.determine_version.outputs.sem_ver }}
+      build_image: ${{ needs.build_image.outputs.github_image_name_and_tag }}

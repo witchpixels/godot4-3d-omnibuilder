@@ -1,0 +1,107 @@
+name: Verify Test Projects
+on:
+  workflow_call:
+    inputs:
+      sem_ver:
+        description: "Semantic version of this repository"
+        required: true
+        type: string
+      build_image:
+        description: The image to build the projects against
+        required: true
+        type: string
+env:
+  EXPORT_NAME: omnibuilder_test_project
+  PROJECT_PATH: test_project
+
+jobs:
+  build_project_linux:
+    name: Build Test Project (Linux)
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ inputs.build_image }}
+      env:
+        EXPORT_NAME: omnibuilder_test_project
+        PROJECT_PATH: test_project
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - name: Fix paths for Github
+        run: setup_github_paths.sh
+
+      - name: Show environment
+        run: env
+
+      - name: Show editor settings
+        run: cat ~/.config/godot/editor_settings-4.tres
+
+      - name: Prebuild
+        run: |
+          mkdir -v -p build/linux
+          cd $PROJECT_PATH
+          godot -v -e --quit --headless
+
+      - name: Show imported asset directory
+        run: ls -la $PROJECT_PATH/.godot/imported
+
+      - name: Validate that blender files were imported
+        run: |
+          cd $PROJECT_PATH
+          ./validate_imports.sh
+
+      - name: Linux Build
+        run: |
+          cd $PROJECT_PATH
+          godot --headless -v --export-release "Linux/X11" ../build/linux/$EXPORT_NAME-${{ inputs.semVer }}.x86_64
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ env.EXPORT_NAME }}-${{ inputs.semVer }}-linux
+          path: build/linux
+  
+  build_project_windows:
+    name: Build Test Project (Windows Desktop)
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ inputs.build_image }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - name: Fix paths for Github
+        run: setup_github_paths.sh
+
+      - name: Show environment
+        run: env
+
+      - name: Show editor settings
+        run: cat ~/.config/godot/editor_settings-4.tres
+
+      - name: Prebuild
+        run: |
+          mkdir -v -p build/windows
+          cd $PROJECT_PATH
+          godot -v -e --quit --headless
+
+      - name: Show imported asset directory
+        run: ls -la $PROJECT_PATH/.godot/imported
+
+      - name: Validate that blender files were imported
+        run: |
+          cd $PROJECT_PATH
+          ./validate_imports.sh
+          
+      - name: Windows Build
+        run: |
+          cd $PROJECT_PATH
+          godot --headless -v --export-release "Windows Desktop" ../build/windows/$EXPORT_NAME-${{ inputs.semVer }}.x86_64
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ env.EXPORT_NAME }}-${{ inputs.semVer }}-windows
+          path: build/windows
