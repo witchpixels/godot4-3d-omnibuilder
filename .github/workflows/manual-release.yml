@@ -37,7 +37,7 @@ jobs:
       build_image: ${{ needs.build_image.outputs.github_image_name_and_tag }}
 
 
-  build_image:
+  build_image_for_release:
     needs: determine_version
     uses: ./.github/workflows/build-image.yml
     with:
