@@ -1,4 +1,4 @@
-name: Build and Verify Container
+name: Manual Release
 on:
   workflow_dispatch:
     inputs:
