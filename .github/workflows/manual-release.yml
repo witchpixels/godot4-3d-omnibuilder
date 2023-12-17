@@ -38,7 +38,9 @@ jobs:
 
 
   build_image_for_release:
-    needs: determine_version
+    needs: 
+      - determine_version
+      - build_projects
     uses: ./.github/workflows/build-image.yml
     with:
       sem_ver: ${{ needs.determine_version.outputs.sem_ver }}
