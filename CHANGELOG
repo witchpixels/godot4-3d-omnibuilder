@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1]
+
+### Fixed
+ * Fixed manual release pipeline
+
 ## [1.2.0]
 ### Added
  * Add support for godot 4.2
@@ -44,7 +49,8 @@ Initial Release
         * 4.0.3 stable
         * 4.1.1 stable
 
-[unreleased]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v1.2.0...HEAD
+[unreleased]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v1.0.1...v1.1.1
 [1.1.0]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v1.0.0...v1.1.0
