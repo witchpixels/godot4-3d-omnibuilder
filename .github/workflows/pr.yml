@@ -12,7 +12,7 @@ jobs:
     uses: ./.github/workflows/build-image.yml
     with:
       sem_ver: ${{ needs.determine_version.outputs.sem_ver }}
-      godot_version: 4.2
+      godot_version: 4.3
       release_name: stable
       release_image: false
 

@@ -8,7 +8,7 @@ on:
         type: string
       godot_version:
         description: Godot Version Semver
-        default: "4.0.0"
+        default: "4.3"
         required: true
         type: string
       release_name: 
