@@ -8,7 +8,6 @@ The image here extends `barichello/godot-ci`'s mono image, and does a few things
  1. Installs dotnet sdk 6.0
  2. Install blender
  3. Sets the blender path in EditorSettings
- 4. Installs FBX2glTF and sets its paths in EditorSettings
  5. Install's gitversion and provides a script, `apply_version_info.sh` which will stamp Full Sever into `application/config/version` in project settings as well as wherever makes sense in export_presets.cfg.
 
 ## Usage
