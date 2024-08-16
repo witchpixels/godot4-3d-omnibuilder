@@ -42,12 +42,12 @@ jobs:
         run: setup_github_paths.sh
 
       - name: Import assets
-        run: godot -v -e --quit --headless
+        run: godot -v --headless --import
 
       - name: Linux Build
         run: |
           mkdir -v -p build/linux
-          godot --headless -v --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
+          godot -v --headless --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
@@ -70,12 +70,12 @@ jobs:
         run: setup_github_paths.sh
 
       - name: Import assets
-        run: godot -v -e --quit --headless
+        run: godot -v --headless --import
 
       - name: Windows Build
         run: |
           mkdir -v -p build/windows
-          godot --headless -v --export-release "Windows Desktop" build/windows/$EXPORT_NAME.x86_64
+          godot -v --headless --export-release "Windows Desktop" build/windows/$EXPORT_NAME.x86_64
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
@@ -115,12 +115,12 @@ jobs:
         run: install_blender.sh 3.6.2
 
       - name: Import assets
-        run: godot -v -e --quit --headless
+        run: godot -v --headless --import
 
       - name: Linux Build
         run: |
           mkdir -v -p build/linux
-          godot --headless -v --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
+          godot -v --headless --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
@@ -146,12 +146,12 @@ jobs:
         run: install_blender.sh 3.6.2
 
       - name: Import assets
-        run: godot -v -e --quit --headless
+        run: godot -v --headless --import
 
       - name: Windows Build
         run: |
           mkdir -v -p build/windows
-          godot --headless -v --export-release "Windows Desktop" build/windows/$EXPORT_NAME.x86_64
+          godot -v --headless --export-release "Windows Desktop" build/windows/$EXPORT_NAME.x86_64
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
@@ -191,7 +191,7 @@ jobs:
         run: setup_github_paths.sh
 
       - name: Import assets
-        run: godot -v -e --quit --headless
+        run: godot -v --headless --import
 
       - name: Stamp Versions
         run: apply_version_info.sh
@@ -199,7 +199,7 @@ jobs:
       - name: Linux Build
         run: |
           mkdir -v -p build/linux
-          godot --headless -v --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
+          godot -v --headless --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
@@ -222,7 +222,7 @@ jobs:
         run: setup_github_paths.sh
 
       - name: Import assets
-        run: godot -v -e --quit --headless
+        run: godot -v --headless --import
 
       - name: Stamp Versions
         run: apply_version_info.sh
@@ -230,7 +230,7 @@ jobs:
       - name: Windows Build
         run: |
           mkdir -v -p build/windows
-          godot --headless -v --export-release "Windows Desktop" build/windows/$EXPORT_NAME.x86_64
+          godot -v --headless --export-release "Windows Desktop" build/windows/$EXPORT_NAME.x86_64
           
       - name: Upload Artifact
         uses: actions/upload-artifact@v1

@@ -1,4 +1,4 @@
-ARG GODOT_VERSION="4.1.2"
+ARG GODOT_VERSION="4.3"
 ARG RELEASE_NAME="stable"
 
 FROM witchpixels/godot4-ci:mono-${GODOT_VERSION}
@@ -10,17 +10,18 @@ RUN bash /opt/scripts/install_dotnet_sdk.sh
 
 ENV PATH="/github/home/.dotnet/tools:/root/.dotnet/tools:${PATH}"
 
-RUN apt update
+RUN apt-get update
 
 # A tool we use for pulling apart version strings
-RUN apt install -y jq
+RUN apt-get install -y jq
 
-# install the dependencies for blender
-RUN apt install -y xorg
-RUN apt install -y xz-utils
+# install the dependencies for blender, we will use the one installed via downloads
+RUN apt-get install -y xorg
+RUN apt-get install -y xz-utils
+RUN apt-get install -y blender
 
 # install blender and also setup blender's path in editor settings so that you can use the inbuilt blender importer
-ENV BLENDER_VERSION="4.2.0"
+ENV BLENDER_VERSION="4.1.1"
 
 ADD install_blender.sh /opt/scripts/install_blender.sh
 RUN bash /opt/scripts/install_blender.sh
