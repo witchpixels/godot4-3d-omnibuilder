@@ -6,7 +6,6 @@ on:
 env:
   IMAGE_NAME: godot4-omnibuilder3d
 jobs:
-
   determine_version:
     uses: ./.github/workflows/determine-version.yml
 
@@ -14,7 +13,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - godot_version: 4.3
+          - godot_version: 4.4
             release_name: stable
     needs: determine_version
     uses: ./.github/workflows/build-image.yml

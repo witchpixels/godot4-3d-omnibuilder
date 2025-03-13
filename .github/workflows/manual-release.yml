@@ -4,16 +4,15 @@ on:
     inputs:
       godot_version:
         description: Godot Version Semver
-        default: "4.3"
+        default: "4.4"
         required: true
         type: string
-      release_name: 
+      release_name:
         description: Release tag, ie stable, rc1, dev, ect
         default: stable
         required: true
         type: string
 
-    
 jobs:
   determine_version:
     uses: ./.github/workflows/determine-version.yml
@@ -36,9 +35,8 @@ jobs:
       sem_ver: ${{ needs.determine_version.outputs.sem_ver }}
       build_image: ${{ needs.build_image.outputs.github_image_name_and_tag }}
 
-
   build_image_for_release:
-    needs: 
+    needs:
       - determine_version
       - build_projects
     uses: ./.github/workflows/build-image.yml

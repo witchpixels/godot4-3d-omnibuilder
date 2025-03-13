@@ -1,7 +1,7 @@
 [gd_scene load_steps=12 format=3 uid="uid://dm7aywol8fq5c"]
 
-[ext_resource type="Script" path="res://src/OrbitalCamera.cs" id="1_papvg"]
-[ext_resource type="Script" path="res://src/CameraOrbitComponent.cs" id="1_pmxok"]
+[ext_resource type="Script" uid="uid://clj2oherm4cop" path="res://src/OrbitalCamera.cs" id="1_papvg"]
+[ext_resource type="Script" uid="uid://p4lgljqi8ois" path="res://src/CameraOrbitComponent.cs" id="1_pmxok"]
 [ext_resource type="Texture2D" uid="uid://cfs70tgp0fjlb" path="res://icon.png" id="2_hvmyp"]
 [ext_resource type="PackedScene" uid="uid://c7my5wqcx0i4r" path="res://d_20.tscn" id="3_s2vwk"]
 
