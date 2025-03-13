@@ -8,10 +8,10 @@ on:
         type: string
       godot_version:
         description: Godot Version Semver
-        default: "4.3"
+        default: "4.4"
         required: true
         type: string
-      release_name: 
+      release_name:
         description: Release tag, ie stable, rc1, dev, ect
         default: stable
         required: true
@@ -24,7 +24,7 @@ on:
       github_image_name_and_tag:
         description: Name and tag of the image that was built
         value: ${{ jobs.build_image.outputs.github_image_name_and_tag }}
-      
+
 env:
   IMAGE_NAME: godot4-omnibuilder3d
 jobs:
@@ -35,9 +35,9 @@ jobs:
       - name: Write repo owner
         id: write_image_owner
         run: echo IMAGE_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
-      
+
       - name: Write Image tag from Godot Version
-        run:  echo IMAGE_TAG=$(echo ${{ inputs.release_name != 'stable' && format('.{0}', inputs.release_name) || '' }}) >> $GITHUB_ENV
+        run: echo IMAGE_TAG=$(echo ${{ inputs.release_name != 'stable' && format('.{0}', inputs.release_name) || '' }}) >> $GITHUB_ENV
 
       - name: Output image name for test project build
         id: write_image_tag
@@ -46,7 +46,7 @@ jobs:
           echo "LATEST_IMAGE_TAG=latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v3
-      - name: Login to GitHub Container Registry 
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v1.14.1
         with:
           registry: ghcr.io
@@ -55,7 +55,7 @@ jobs:
 
       - name: Login to DockerHub
         if: ${{ inputs.release_image }}
-        uses: docker/login-action@v1 
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -71,7 +71,7 @@ jobs:
           build-args: |
             GODOT_VERSION=${{ inputs.godot_version }}
             RELEASE_NAME=${{ inputs.release_name }}
-            
+
       - name: Build and Release Docker images to Dockerhub
         if: ${{ inputs.release_image }}
         uses: docker/build-push-action@v2.9.0
