@@ -36,7 +36,7 @@ jobs:
         run: env
 
       - name: Show editor settings
-        run: cat ~/.config/godot/editor_settings-4.3.tres
+        run: cat ~/.config/godot/editor_settings-4.4.tres
 
       - name: Prebuild
         run: |
@@ -57,11 +57,11 @@ jobs:
           cd $PROJECT_PATH
           godot -v --headless --export-release "Linux/X11" ../build/linux/$EXPORT_NAME-${{ inputs.semVer }}.x86_64
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.EXPORT_NAME }}-${{ inputs.semVer }}-linux
           path: build/linux
-  
+
   build_project_windows:
     name: Build Test Project (Windows Desktop)
     runs-on: ubuntu-latest
@@ -80,7 +80,7 @@ jobs:
         run: env
 
       - name: Show editor settings
-        run: cat ~/.config/godot/editor_settings-4.3.tres
+        run: cat ~/.config/godot/editor_settings-4.4.tres
 
       - name: Prebuild
         run: |
@@ -95,13 +95,13 @@ jobs:
         run: |
           cd $PROJECT_PATH
           ./validate_imports.sh
-          
+
       - name: Windows Build
         run: |
           cd $PROJECT_PATH
           godot -v --headless --export-release "Windows Desktop" ../build/windows/$EXPORT_NAME-${{ inputs.semVer }}.x86_64
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.EXPORT_NAME }}-${{ inputs.semVer }}-windows
           path: build/windows
