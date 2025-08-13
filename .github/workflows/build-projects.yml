@@ -101,7 +101,9 @@ jobs:
       matrix:
         include:
           - build_image: ${{ inputs.build_image }}-vanilla
+            artifact_tag: vanilla
           - build_image: ${{ inputs.build_image }}-mono
+            artifact_tag: mono
     name: Build Test Project (Windows Desktop)
     runs-on: ubuntu-latest
     container:
