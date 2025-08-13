@@ -37,7 +37,7 @@ jobs:
 
       - name: Show editor settings
         run: |
-          source /etc/profile
+          /opt/setup_editor_settings_version.sh
           cat $GODOT_EDITOR_SETTINGS_PATH
 
       - name: Prebuild
@@ -83,7 +83,7 @@ jobs:
 
       - name: Show editor settings
         run: |
-          source /etc/profile
+          /opt/setup_editor_settings_version.sh
           cat $GODOT_EDITOR_SETTINGS_PATH
 
       - name: Prebuild
@@ -132,7 +132,7 @@ jobs:
 
       - name: Show editor settings
         run: |
-          source /etc/profile
+          /opt/setup_editor_settings_version.sh
           cat $GODOT_EDITOR_SETTINGS_PATH
 
       - name: Prebuild
@@ -178,7 +178,7 @@ jobs:
 
       - name: Show editor settings
         run: |
-          source /etc/profile
+          /opt/setup_editor_settings_version.sh
           cat $GODOT_EDITOR_SETTINGS_PATH
 
       - name: Prebuild

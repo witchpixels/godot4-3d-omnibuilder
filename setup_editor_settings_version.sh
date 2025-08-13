@@ -8,7 +8,7 @@ then
     EDITOR_SETTINGS_VERSION="$(echo $GD_VERSION | cut -d '.' -f 1)"
 fi
 
-GODOT_EDITOR_SETTINGS_PATH="/root/.config/godot/editor_settings-$EDITOR_SETTINGS_VERSION.tres"
+export GODOT_EDITOR_SETTINGS_PATH="/root/.config/godot/editor_settings-$EDITOR_SETTINGS_VERSION.tres"
 
 echo "Setting editor settings path as $GODOT_EDITOR_SETTINGS_PATH"
 echo "export GODOT_ENGINE_VERSION=${GD_VERSION}" >> /etc/profile
