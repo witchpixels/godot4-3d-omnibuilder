@@ -8,9 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.1.0]
 ### Added
   - Support for Non-mono build containers [#21](https://github.com/witchpixels/godot4-3d-omnibuilder/pull/21)
-    - Adds the tags `<semver>-<godot-version><godot release tag>-mono` and `latest-<godot-version><godot release tag>-mono`
+    - Adds the tags `<semver>-<godot-version><godot release tag>-mono` and `latest-<godot-version><godot release tag>-mono` to previous godot-mono builds
   - [x] Adds new container builds that are based on non-mono container tags of [abarichello/godot-ci](https://github.com/abarichello/godot-ci/)
-    - There are tagges as `<semver>-<godot-version><godot release tag>-vanilla` and `latest-<godot-version><godot release tag>-vanilla`
+    - There are tagged as `<semver>-<godot-version><godot release tag>-vanilla` and `latest-<godot-version><godot release tag>-vanilla`
   - Added the following tools to the build container [#21](https://github.com/witchpixels/godot4-3d-omnibuilder/pull/21)
     - Scons
     - Rustup
