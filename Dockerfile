@@ -18,6 +18,10 @@ RUN apt-get install scons
 # Install Rustup for GdRust Users
 RUN apt-get install rustup
 
+# Install emsdk for anyone who needs it for building wasm components
+ADD setup_emsdk.sh /opt/setup_emsdk.sh 
+RUN bash /opt/setup_emsdk.sh 
+
 # A tool we use for pulling apart version strings
 RUN apt-get install -y jq
 
