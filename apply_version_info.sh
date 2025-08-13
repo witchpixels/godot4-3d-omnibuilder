@@ -14,8 +14,11 @@ if [[ -f "GitVersion.yml" || -f "../GitVersion.yml" ]]; then
 
 
     echo "Running gitversion to retrieve FullSemVer and AssemblySemVer"
-    export SEMVER=$(dotnet-gitversion | jq .FullSemVer)
-    export ASSEMBLY_SEMVER=$(dotnet-gitversion | jq .AssemblySemVer)
+    SEMVER=$(dotnet-gitversion | jq .FullSemVer)
+    export SEMVER
+    
+    ASSEMBLY_SEMVER=$(dotnet-gitversion | jq .AssemblySemVer)
+    export ASSEMBLY_SEMVER
 
     echo "Stamp version $SEMVER in project"
     cat ./project.godot | sed "/^config\\/version=/s/=.*/=$SEMVER/" > ./project.godot.2
