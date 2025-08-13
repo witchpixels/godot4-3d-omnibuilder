@@ -21,7 +21,7 @@ RUN apt-get install -y xz-utils
 RUN apt-get install -y blender
 
 # install blender and also setup blender's path in editor settings so that you can use the inbuilt blender importer
-ENV BLENDER_VERSION="4.1.1"
+ENV BLENDER_VERSION="4.5.1"
 
 ADD install_blender.sh /opt/scripts/install_blender.sh
 RUN bash /opt/scripts/install_blender.sh
