@@ -94,6 +94,33 @@ jobs:
             GODOT_VERSION=mono-${{ inputs.godot_version }}
             RELEASE_NAME=${{ inputs.release_name }}
 
+      - name: Build and push Vanilla Docker images to Github
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VANILLA_VERSIONED_IMAGE_TAG }}
+          build-args: |
+            GODOT_VERSION=${{ inputs.godot_version }}
+            RELEASE_NAME=${{ inputs.release_name }}
+
+      - name: Build and Release Vanilla Docker images to Dockerhub
+        if: ${{ inputs.release_image }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VANILLA_VERSIONED_IMAGE_TAG }}
+            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VANILLA_LATEST_IMAGE_TAG }}
+            
+          build-args: |
+            GODOT_VERSION=${{ inputs.godot_version }}
+            RELEASE_NAME=${{ inputs.release_name }}
+
       - name: Collect outputs
         id: collect_outputs
         run: |
