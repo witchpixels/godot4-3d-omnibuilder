@@ -9,7 +9,6 @@ ARG GODOT_VERSION
 RUN echo "${GODOT_VERSION}"
 ADD setup_editor_settings_version.sh /opt/setup_editor_settings_version.sh
 RUN bash /opt/setup_editor_settings_version.sh
-RUN source /etc/profile
 RUN echo "Godot Settings file version is ${GODOT_EDITOR_SETTINGS_VERSION}"
 RUN echo "Godot Settings file path is ${GODOT_EDITOR_SETTINGS_PATH}"
 
