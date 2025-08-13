@@ -6,5 +6,5 @@ then
 fi
 
 mkdir -pv "$HOME"
-cp -Lrvu /root/. "$HOME"
+cp -Lrv /root/. "$HOME"
 chown -R "$USER" "$HOME"
