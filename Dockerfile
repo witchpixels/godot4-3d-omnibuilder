@@ -16,7 +16,7 @@ RUN apt-get update
 RUN apt-get install -y scons
 
 # Install Rustup for GdRust Users
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
 
 # Install emsdk for anyone who needs it for building wasm components
 ADD setup_emsdk.sh /opt/setup_emsdk.sh 
