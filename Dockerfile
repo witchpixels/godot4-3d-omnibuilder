@@ -51,10 +51,6 @@ ENV PATH="/opt/blender:${PATH}"
 ADD setup_blender_editor_path.sh /opt/scripts/setup_blender_editor_path.sh
 RUN bash /opt/scripts/setup_blender_editor_path.sh
 
-# Some paths produced in the image are incorrect
-ADD setup_templates.sh /opt/scripts/setup_templates.sh
-RUN bash /opt/scripts/setup_templates.sh
-
 # This script is there to fixup paths for github runners, which annoyingly 
 # seem to nuke the home dir we preconfigured in previous versions.
 ADD setup_github_paths.sh /opt/scripts/setup_github_paths.sh 
