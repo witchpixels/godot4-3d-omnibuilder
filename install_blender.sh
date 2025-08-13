@@ -1,4 +1,4 @@
- #!/bin/bash
+#!/bin/bash
 DESIRED_BLENDER_VERSION=$1
 
 if [[ -z "$DESIRED_BLENDER_VERSION" ]]; then
@@ -10,7 +10,7 @@ fi
 
 BLENDER_URL_ROOT=${DESIRED_BLENDER_VERSION%.*}
 
-wget -nv https://download.blender.org/release/Blender${BLENDER_URL_ROOT}/blender-${DESIRED_BLENDER_VERSION}-linux-x64.tar.xz
-tar -xJf ./blender-${DESIRED_BLENDER_VERSION}-linux-x64.tar.xz
+wget -nv https://download.blender.org/release/Blender"${BLENDER_URL_ROOT}"/blender-"${DESIRED_BLENDER_VERSION}"-linux-x64.tar.xz
+tar -xJf ./blender-"${DESIRED_BLENDER_VERSION}"-linux-x64.tar.xz
 
-mv ./blender-${DESIRED_BLENDER_VERSION}-linux-x64 /opt/blender
+mv ./blender-"${DESIRED_BLENDER_VERSION}"-linux-x64 /opt/blender
