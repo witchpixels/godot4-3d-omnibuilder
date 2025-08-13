@@ -5,6 +5,7 @@ FROM barichello/godot-ci:${GODOT_VERSION}
 LABEL author="https://github.com/witchpixels/godot4-3d-omnibuilder/graphs/contributors"
 
 ARG GODOT_VERSION
+ENV GODOT_VERSION=${GODOT_VERSION}
 
 ADD setup_editor_settings_version.sh /opt/setup_editor_settings_version.sh
 RUN bash /opt/setup_editor_settings_version.sh
