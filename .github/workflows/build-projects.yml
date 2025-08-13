@@ -14,6 +14,32 @@ env:
   EXPORT_NAME: omnibuilder_test_project
   PROJECT_PATH: test_project
 jobs:
+  verify_tools:
+    strategy:
+      matrix:
+        include:
+          - build_image: ${{ inputs.build_image }}-vanilla
+            artifact_tag: vanilla
+          - build_image: ${{ inputs.build_image }}-mono
+            artifact_tag: mono
+    name: Verify Tools
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.build_image }}
+    steps:
+      - name: Godot
+        run: godot --version
+      - name: Dotnet
+        run: dotnet --version
+      - name: Scons
+        run: scons --version
+      - name: RustUp
+        run: rustup --version
+      - name: Rust Toolchains
+        run: rustup toolchain list
+      - name: Blender
+        run: blender --version
+
   build_project_linux:
     strategy:
       matrix:
