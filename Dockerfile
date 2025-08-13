@@ -12,6 +12,12 @@ ENV PATH="/github/home/.dotnet/tools:/root/.dotnet/tools:${PATH}"
 
 RUN apt-get update
 
+# Install Scons for GdExtension Users
+RUN apt-get install scons
+
+# Install Rustup for GdRust Users
+RUN apt-get install rustup
+
 # A tool we use for pulling apart version strings
 RUN apt-get install -y jq
 
