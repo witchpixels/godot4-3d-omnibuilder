@@ -11,5 +11,5 @@ fi
 GODOT_EDITOR_SETTINGS_PATH="/root/.config/godot/editor_settings-$EDITOR_SETTINGS_VERSION.tres"
 
 echo "Setting editor settings path as $GODOT_EDITOR_SETTINGS_PATH"
-echo "export GODOT_ENGINE_VERSION=${GD_VERSION}" >> /etc/bash.bashrc
-echo "export GODOT_EDITOR_SETTINGS_PATH=${GODOT_EDITOR_SETTINGS_PATH}" >> /etc/bash.bashrc
+echo "export GODOT_ENGINE_VERSION=${GD_VERSION}" >> /etc/profile
+echo "export GODOT_EDITOR_SETTINGS_PATH=${GODOT_EDITOR_SETTINGS_PATH}" >> /etc/profile

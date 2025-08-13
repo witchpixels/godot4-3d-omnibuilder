@@ -6,11 +6,8 @@ LABEL author="https://github.com/witchpixels/godot4-3d-omnibuilder/graphs/contri
 
 ARG GODOT_VERSION
 
-RUN echo "${GODOT_VERSION}"
 ADD setup_editor_settings_version.sh /opt/setup_editor_settings_version.sh
 RUN bash /opt/setup_editor_settings_version.sh
-RUN echo "Godot Settings file version is ${GODOT_EDITOR_SETTINGS_VERSION}"
-RUN echo "Godot Settings file path is ${GODOT_EDITOR_SETTINGS_PATH}"
 
 # install dotnet-sdk
 ADD install_dotnet_sdk.sh /opt/scripts/install_dotnet_sdk.sh

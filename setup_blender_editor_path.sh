@@ -1,5 +1,5 @@
 #!/bin/bash
-source /etc/bash.bashrc
+source /etc/profile
 godot -v -e --quit --headless
 
 echo $(which blender)

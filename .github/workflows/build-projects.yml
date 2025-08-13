@@ -36,7 +36,9 @@ jobs:
         run: env
 
       - name: Show editor settings
-        run: cat $GODOT_EDITOR_SETTINGS_PATH
+        run: |
+          source /etc/profile
+          cat $GODOT_EDITOR_SETTINGS_PATH
 
       - name: Prebuild
         run: |
@@ -80,7 +82,9 @@ jobs:
         run: env
 
       - name: Show editor settings
-        run: cat $GODOT_EDITOR_SETTINGS_PATH
+        run: |
+          source /etc/profile
+          cat $GODOT_EDITOR_SETTINGS_PATH
 
       - name: Prebuild
         run: |
@@ -127,7 +131,9 @@ jobs:
         run: env
 
       - name: Show editor settings
-        run: cat $GODOT_EDITOR_SETTINGS_PATH
+        run: |
+          source /etc/profile
+          cat $GODOT_EDITOR_SETTINGS_PATH
 
       - name: Prebuild
         run: |
@@ -171,7 +177,9 @@ jobs:
         run: env
 
       - name: Show editor settings
-        run: cat $GODOT_EDITOR_SETTINGS_PATH
+        run: |
+          source /etc/profile
+          cat $GODOT_EDITOR_SETTINGS_PATH
 
       - name: Prebuild
         run: |
