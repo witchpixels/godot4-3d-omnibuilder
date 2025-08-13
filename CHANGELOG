@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.0.0]
 ### Added
   - Support 4.4 by @TDogVoid in [#18](https://github.com/witchpixels/godot4-3d-omnibuilder/pull/18), [#19](https://github.com/witchpixels/godot4-3d-omnibuilder/pull/19)
-  - Deprecated [Fock of godot-ci](https://github.com/witchpixels/godot-ci) now based on upstream [abarichello/godot-ci](https://github.com/abarichello/godot-ci)
+  - Deprecated [Fork of godot-ci](https://github.com/witchpixels/godot-ci) now based on upstream [abarichello/godot-ci](https://github.com/abarichello/godot-ci)
 
 ## [2.0.0]
 ### Added
