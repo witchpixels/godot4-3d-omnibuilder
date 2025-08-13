@@ -74,11 +74,14 @@ jobs:
       - name: Fix paths for Github
         run: setup_github_paths.sh
 
+      - name: Setup Editor Settings Environment
+        run: setup_editor_settings_version.sh
+
       - name: Show environment
         run: env
-
+        
       - name: Show editor settings
-        run: setup_editor_settings_version.sh && cat $GODOT_EDITOR_SETTINGS_PATH
+        run: cat $GODOT_EDITOR_SETTINGS_PATH
 
       - name: Prebuild
         run: |
@@ -125,11 +128,14 @@ jobs:
       - name: Fix paths for Github
         run: setup_github_paths.sh
 
+      - name: Setup Editor Settings Environment
+        run: setup_editor_settings_version.sh
+
       - name: Show environment
         run: env
 
       - name: Show editor settings
-        run: setup_editor_settings_version.sh && cat $GODOT_EDITOR_SETTINGS_PATH
+        run: cat $GODOT_EDITOR_SETTINGS_PATH
 
       - name: Prebuild
         run: |
