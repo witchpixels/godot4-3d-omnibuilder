@@ -13,10 +13,10 @@ ENV PATH="/github/home/.dotnet/tools:/root/.dotnet/tools:${PATH}"
 RUN apt-get update
 
 # Install Scons for GdExtension Users
-RUN apt-get install scons
+RUN apt-get install -y scons
 
 # Install Rustup for GdRust Users
-RUN apt-get install rustup
+RUN apt-get install -y rustup
 
 # Install emsdk for anyone who needs it for building wasm components
 ADD setup_emsdk.sh /opt/setup_emsdk.sh 
