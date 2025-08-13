@@ -4,6 +4,15 @@ ARG RELEASE_NAME="stable"
 FROM barichello/godot-ci:${GODOT_VERSION}
 LABEL author="https://github.com/witchpixels/godot4-3d-omnibuilder/graphs/contributors"
 
+ARG GODOT_VERSION
+
+RUN echo "${GODOT_VERSION}"
+RUN echo export GODOT_EDITOR_SETTINGS_PATH="/root/.config/godot/editor_settings-$(echo $GODOT_VERSION | cut -d '.' -f 1).$(echo $GODOT_VERSION | cut -d '.' -f 2).tres" >> /etc/profile
+RUN source /etc/profile
+RUN cat /etc/profile
+RUN echo "Godot Settings file version is $GODOT_EDITOR_SETTINGS_VERSION"
+RUN echo "Godot Settings file path is $GODOT_EDITOR_SETTINGS_PATH"
+
 # install dotnet-sdk
 ADD install_dotnet_sdk.sh /opt/scripts/install_dotnet_sdk.sh
 RUN bash /opt/scripts/install_dotnet_sdk.sh
@@ -12,8 +21,8 @@ ENV PATH="/github/home/.dotnet/tools:/root/.dotnet/tools:${PATH}"
 
 RUN apt-get update
 
-# xz utils are needed for a bunch of stuff
-RUN apt-get install -y xz-utils
+# Some Common tool dependencies
+RUN apt-get install -y xz-utils curl
 
 # Install Scons for GdExtension Users
 RUN apt-get install -y scons
