@@ -25,3 +25,15 @@ jobs:
       release_name: ${{ matrix.release_name }}
       release_image: true
     secrets: inherit
+  update_dockerhub_readme:
+    name: Build Test Project (Windows Desktop)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: peterevans/dockerhub-description
+          short-description: ${{ github.event.repository.description }}
