@@ -12,6 +12,9 @@ ENV PATH="/github/home/.dotnet/tools:/root/.dotnet/tools:${PATH}"
 
 RUN apt-get update
 
+# xz utils are needed for a bunch of stuff
+RUN apt-get install -y xz-utils
+
 # Install Scons for GdExtension Users
 RUN apt-get install -y scons
 
@@ -27,7 +30,6 @@ RUN apt-get install -y jq
 
 # install the dependencies for blender, we will use the one installed via downloads
 RUN apt-get install -y xorg
-RUN apt-get install -y xz-utils
 RUN apt-get install -y blender
 
 # install blender and also setup blender's path in editor settings so that you can use the inbuilt blender importer
