@@ -9,7 +9,16 @@ then
 fi
 
 export GODOT_ENGINE_VERSION=${GD_VERSION}
-export GODOT_EDITOR_SETTINGS_PATH="/root/.config/godot/editor_settings-$EDITOR_SETTINGS_VERSION.tres"
+
+# Add GODOT_ENGINE_VERSION and GODOT_EDITOR_SETTINGS_PATH to Github Env if it exists
+if [[ ! -z "$GITHUB_ENV" ]]
+then
+    export GODOT_EDITOR_SETTINGS_PATH="$HOME/.config/godot/editor_settings-$EDITOR_SETTINGS_VERSION.tres"
+    {
+        echo "GODOT_ENGINE_VERSION=${GD_VERSION}"
+        echo "GODOT_EDITOR_SETTINGS_PATH=$GODOT_EDITOR_SETTINGS_PATH" 
+    }>> "$GITHUB_ENV"
+fi
 
 echo "Setting editor settings path as $GODOT_EDITOR_SETTINGS_PATH"
 
