@@ -13,13 +13,19 @@ on:
 env:
   EXPORT_NAME: omnibuilder_test_project
   PROJECT_PATH: test_project
-
 jobs:
-  build_project_linux-vanilla:
-    name: Build Vanilla Test Project (Linux)
+  build_project_linux:
+    strategy:
+      matrix:
+        include:
+          - build_image: ${{ inputs.build_image }}-vanilla
+            artifact_tag: vanilla
+          - build_image: ${{ inputs.build_image }}-mono
+            artifact_tag: mono
+    name: Build Test Project (Linux)
     runs-on: ubuntu-latest
     container:
-      image: ${{ inputs.build_image }}-vanilla
+      image: ${{ matrix.build_image }}
       env:
         EXPORT_NAME: omnibuilder_test_project
         PROJECT_PATH: test_project
@@ -57,18 +63,23 @@ jobs:
       - name: Linux Build
         run: |
           cd $PROJECT_PATH
-          godot -v --headless --export-release "Linux/X11" ../build/linux/$EXPORT_NAME-${{ inputs.semVer }}.x86_64
+          godot -v --headless --export-release "Linux/X11" ../build/linux/$EXPORT_NAME-${{ inputs.sem_ver }}-${{ matrix.artifact_tag }}.x86_64
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.EXPORT_NAME }}-${{ inputs.semVer }}-linux
+          name: ${{ env.EXPORT_NAME }}-${{ inputs.sem_ver }}-linux-${{ matrix.artifact_tag }}
           path: build/linux
 
-  build_project_windows-vanilla:
-    name: Build Vanilla Test Project (Windows Desktop)
+  build_project_windows:
+    strategy:
+      matrix:
+        include:
+          - build_image: ${{ inputs.build_image }}-vanilla
+          - build_image: ${{ inputs.build_image }}-mono
+    name: Build Test Project (Windows Desktop)
     runs-on: ubuntu-latest
     container:
-      image: ${{ inputs.build_image }}-vanilla
+      image: ${{ matrix.build_image }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -103,104 +114,9 @@ jobs:
       - name: Windows Build
         run: |
           cd $PROJECT_PATH
-          godot -v --headless --export-release "Windows Desktop" ../build/windows/$EXPORT_NAME-${{ inputs.semVer }}.x86_64
+          godot -v --headless --export-release "Windows Desktop" ../build/windows/$EXPORT_NAME-${{ inputs.sem_ver }}-${{ matrix.artifact_tag }}.exe
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.EXPORT_NAME }}-${{ inputs.semVer }}-windows
-          path: build/windows
-
-  build_project_linux-mono:
-    name: Build Mono Test Project (Linux)
-    runs-on: ubuntu-latest
-    container:
-      image: ${{ inputs.build_image }}-mono
-      env:
-        EXPORT_NAME: omnibuilder_test_project
-        PROJECT_PATH: test_project
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-
-      - name: Fix paths for Github
-        run: setup_github_paths.sh
-
-      - name: Show environment
-        run: env
-
-      - name: Show editor settings
-        run: |
-          /opt/setup_editor_settings_version.sh
-          cat $GODOT_EDITOR_SETTINGS_PATH
-
-      - name: Prebuild
-        run: |
-          mkdir -v -p build/linux
-          cd $PROJECT_PATH
-          godot -v --headless --import
-
-      - name: Show imported asset directory
-        run: ls -la $PROJECT_PATH/.godot/imported
-
-      - name: Validate that blender files were imported
-        run: |
-          cd $PROJECT_PATH
-          ./validate_imports.sh
-
-      - name: Linux Build
-        run: |
-          cd $PROJECT_PATH
-          godot -v --headless --export-release "Linux/X11" ../build/linux/$EXPORT_NAME-${{ inputs.semVer }}.x86_64
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.EXPORT_NAME }}-${{ inputs.semVer }}-linux
-          path: build/linux
-
-  build_project_windows-mono:
-    name: Build Mono Test Project (Windows Desktop)
-    runs-on: ubuntu-latest
-    container:
-      image: ${{ inputs.build_image }}-mono
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-
-      - name: Fix paths for Github
-        run: setup_github_paths.sh
-
-      - name: Show environment
-        run: env
-
-      - name: Show editor settings
-        run: |
-          /opt/setup_editor_settings_version.sh
-          cat $GODOT_EDITOR_SETTINGS_PATH
-
-      - name: Prebuild
-        run: |
-          mkdir -v -p build/windows
-          cd $PROJECT_PATH
-          godot -v --headless --import
-
-      - name: Show imported asset directory
-        run: ls -la $PROJECT_PATH/.godot/imported
-
-      - name: Validate that blender files were imported
-        run: |
-          cd $PROJECT_PATH
-          ./validate_imports.sh
-
-      - name: Windows Build
-        run: |
-          cd $PROJECT_PATH
-          godot -v --headless --export-release "Windows Desktop" ../build/windows/$EXPORT_NAME-${{ inputs.semVer }}.x86_64
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.EXPORT_NAME }}-${{ inputs.semVer }}-windows
+          name: ${{ env.EXPORT_NAME }}-${{ inputs.sem_ver }}-windows-${{ matrix.artifact_tag }}
           path: build/windows
