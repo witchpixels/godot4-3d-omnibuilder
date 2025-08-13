@@ -27,6 +27,12 @@ jobs:
     container:
       image: ${{ matrix.build_image }}
     steps:
+      - name: Show env
+        run: env
+      - name: Show PATH
+        run: echo $PATH
+      - name: Show HOME
+        run: echo $HOME
       - name: Godot
         run: godot --version
       - name: Blender
