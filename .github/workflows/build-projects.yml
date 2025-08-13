@@ -29,6 +29,8 @@ jobs:
     steps:
       - name: Godot
         run: godot --version
+      - name: Blender
+        run: blender --version
       - name: Dotnet
         run: dotnet --version
       - name: Scons
@@ -37,8 +39,8 @@ jobs:
         run: rustup --version
       - name: Rust Toolchains
         run: rustup toolchain list
-      - name: Blender
-        run: blender --version
+      - name: EMSDK
+        run: emsdk list
 
   build_project_linux:
     strategy:

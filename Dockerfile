@@ -7,8 +7,8 @@ LABEL author="https://github.com/witchpixels/godot4-3d-omnibuilder/graphs/contri
 ARG GODOT_VERSION
 ENV GODOT_VERSION=${GODOT_VERSION}
 
-ADD setup_editor_settings_version.sh /opt/setup_editor_settings_version.sh
-RUN bash /opt/setup_editor_settings_version.sh
+ADD setup_editor_settings_version.sh /opt/scripts/setup_editor_settings_version.sh
+RUN bash /opt/scripts/setup_editor_settings_version.sh
 
 # install dotnet-sdk
 ADD install_dotnet_sdk.sh /opt/scripts/install_dotnet_sdk.sh
@@ -33,8 +33,8 @@ RUN rustup component add rust-src --toolchain nightly
 RUN rustup target add wasm32-unknown-emscripten --toolchain nightly
 
 # Install emsdk for anyone who needs it for building wasm components
-ADD setup_emsdk.sh /opt/setup_emsdk.sh 
-RUN bash /opt/setup_emsdk.sh 
+ADD setup_emsdk.sh /opt/scripts/setup_emsdk.sh 
+RUN bash /opt/scripts/setup_emsdk.sh 
 
 # A tool we use for pulling apart version strings
 RUN apt-get install -y jq
@@ -60,4 +60,4 @@ ADD setup_github_paths.sh /opt/scripts/setup_github_paths.sh
 # Finally, the optional script to stamp versions if you need it
 ADD apply_version_info.sh /opt/scripts/apply_version_info.sh
 
-ENV PATH="/opt/scripts/:${PATH}"
+ENV PATH="/emsdk/upstream/emscripten:/emsdk/node/22.16.0_64bit/bin:/emsdk:/root/.cargo/bin:/opt/scripts:${PATH}"
