@@ -27,6 +27,8 @@ jobs:
     container:
       image: ${{ matrix.build_image }}
     steps:
+      - name: Fix paths for Github
+        run: setup_github_paths.sh
       - name: Show env
         run: env
       - name: Show PATH
