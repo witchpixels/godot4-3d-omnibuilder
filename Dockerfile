@@ -27,6 +27,11 @@ RUN apt-get install -y scons
 # Install Rustup for GdRust Users
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
 
+# Install wasm toolchain for rust web exports
+RUN rustup toolchain install nightly
+RUN rustup component add rust-src --toolchain nightly
+RUN rustup target add wasm32-unknown-emscripten --toolchain nightly
+
 # Install emsdk for anyone who needs it for building wasm components
 ADD setup_emsdk.sh /opt/setup_emsdk.sh 
 RUN bash /opt/setup_emsdk.sh 
