@@ -5,61 +5,84 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0]
+### Added
+  - Support for Non-mono build containers [#21](https://github.com/witchpixels/godot4-3d-omnibuilder/pull/21)
+    - Adds the tags `<semver>-<godot-version><godot release tag>-mono` and `latest-<godot-version><godot release tag>-mono`
+  - [x] Adds new container builds that are based on non-mono container tags of [abarichello/godot-ci](https://github.com/abarichello/godot-ci/)
+    - There are tagges as `<semver>-<godot-version><godot release tag>-vanilla` and `latest-<godot-version><godot release tag>-vanilla`
+  - Added the following tools to the build container [#21](https://github.com/witchpixels/godot4-3d-omnibuilder/pull/21)
+    - Scons
+    - Rustup
+    - EMSDK
+  
+### Changed
+  - Update `docker-login` and `build-push-action` versions as the old ones used deprecated Github functionality [#21](https://github.com/witchpixels/godot4-3d-omnibuilder/pull/21)
+  - Blender updated to `4.5.1 LTS` [#21](https://github.com/witchpixels/godot4-3d-omnibuilder/pull/21)
+
+
+## [3.0.0]
+### Added
+  - Support 4.4 by @TDogVoid in [#18](https://github.com/witchpixels/godot4-3d-omnibuilder/pull/18), [#19](https://github.com/witchpixels/godot4-3d-omnibuilder/pull/19)
+  - Deprecated [Fock of godot-ci](https://github.com/witchpixels/godot-ci) now based on upstream [abarichello/godot-ci](https://github.com/abarichello/godot-ci)
+
 ## [2.0.0]
 ### Added
- * Support for Godot 4.3
+  - Support for Godot 4.3
 
 ### Removed
- * Support for previous version of Godot from this version onwards
- * fbx2gltf is no longer installed as part of the container as it is redundant in godot 4.3
+  - Support for previous version of Godot from this version onwards
+  - fbx2gltf is no longer installed as part of the container as it is redundant in godot 4.3
 
 
 ## [1.2.2]
 ### Changed
- * Update blender verison to 4.2 in perparation for Godot 4.3
+  - Update blender verison to 4.2 in perparation for Godot 4.3
 
 ## [1.2.1]
 
 ### Fixed
- * Fixed manual release pipeline
+ - Fixed manual release pipeline
 
 ## [1.2.0]
 ### Added
- * Add support for godot 4.2
- * Added a release pipeline to handle new godot versions between actual substantive changes to the container.
+ - Add support for godot 4.2
+ - Added a release pipeline to handle new godot versions between actual substantive changes to the container.
 
 ### Misc
- * Did a bit of refactoring to make the pipelines a little more readable, hopefully.
+ - Did a bit of refactoring to make the pipelines a little more readable, hopefully.
 
 ## [1.1.1]
 
 ### Added
- * Add 4.1.2 and 4.1.3 to release matrix
+ - Add 4.1.2 and 4.1.3 to release matrix
 
 ## [1.1.0]
 
 ### Added
-    * Support for fbx import using FBX2glTF @[Terrence Drumm](https://github.com/TDogVoid)
+  - Support for fbx import using FBX2glTF @[Terrence Drumm](https://github.com/TDogVoid)
 
 ### Changed
-    * Remove a docker login step from the CI pipeline that is both unneeded and will always fail on a PR from anyone but the repo owner.
+  - Remove a docker login step from the CI pipeline that is both unneeded and will always fail on a PR from anyone but the repo owner.
 
 ## [1.0.0]
 
 Initial Release
 
 ### Added
-    * Docker Image that builds off of [aBarichello's godot-ci project](https://github.com/abarichello/godot-ci/) including the following additional tools:
-        * dotnet sdk 6.0
-        * dotnet-gitversion for version management
-        * blender 3.6.0
-        * helper scripts for stamping versions, installing additonal blender versions
-        * helper tools for dealing with path disparity between GitLab and Github runners
-    * A test project to verify the container builds as expected with a semi-automated pass/fail (still kinda needs visual confirmation)
-    * Added release pipeline to push to following godot versions
-        * 4.0.3 stable
-        * 4.1.1 stable
+  - Docker Image that builds off of [aBarichello's godot-ci project](https://github.com/abarichello/godot-ci/) including the following additional tools:
+    - dotnet sdk 6.0
+    - dotnet-gitversion for version management
+    - blender 3.6.0
+    - helper scripts for stamping versions, installing additonal blender versions
+    - helper tools for dealing with path disparity between GitLab and Github runners
+  - A test project to verify the container builds as expected with a semi-automated pass/fail (still kinda needs visual confirmation)
+  - Added release pipeline to push to following godot versions
+    - 4.0.3 stable
+    - 4.1.1 stable
 
+[3.1.0]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v3.0.0...v3.1.0
+[3.0.0]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v1.2.2...v2.0.0
 [1.2.2]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v1.2.0...v1.2.1
