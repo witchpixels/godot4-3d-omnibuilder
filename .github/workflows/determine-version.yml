@@ -11,7 +11,7 @@ jobs:
     name: Determine build state
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       # Get git version set up
       - name: Fetch all history for all tags and branches
         run: |
