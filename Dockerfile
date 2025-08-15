@@ -19,7 +19,7 @@ ENV PATH="/github/home/.dotnet/tools:/root/.dotnet/tools:${PATH}"
 RUN apt-get update
 
 # Some Common tool dependencies
-RUN apt-get install -y xz-utils curl
+RUN apt-get install -y xz-utils curl build-essential
 
 # Install Scons for GdExtension Users
 RUN apt-get install -y scons
