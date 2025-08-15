@@ -36,7 +36,7 @@ jobs:
       image: witchpixels/godot4-omnibuilder3d:latest-4.1.1
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           lfs: true
 
@@ -50,7 +50,7 @@ jobs:
           godot -v --headless --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.EXPORT_NAME }}-linux
           path: build/linux
@@ -62,7 +62,7 @@ jobs:
       image: witchpixels/godot4-omnibuilder3d:latest-4.1.1
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           lfs: true
 
@@ -73,10 +73,10 @@ jobs:
       - name: Windows Build
         run: |
           mkdir -v -p build/windows
-          godot -v --headless --export-release "Windows Desktop" build/windows/$EXPORT_NAME.x86_64
+          godot -v --headless --export-release "Windows Desktop" build/windows/$EXPORT_NAME.exe
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.EXPORT_NAME }}-windows
           path: build/windows
@@ -102,7 +102,7 @@ jobs:
       image: witchpixels/godot4-omnibuilder3d:latest-4.1.1
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           lfs: true
 
@@ -115,7 +115,7 @@ jobs:
           godot -v --headless --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.EXPORT_NAME }}-linux
           path: build/linux
@@ -127,7 +127,7 @@ jobs:
       image: witchpixels/godot4-omnibuilder3d:latest-4.1.1
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           lfs: true
 
@@ -137,10 +137,10 @@ jobs:
       - name: Windows Build
         run: |
           mkdir -v -p build/windows
-          godot -v --headless --export-release "Windows Desktop" build/windows/$EXPORT_NAME.x86_64
+          godot -v --headless --export-release "Windows Desktop" build/windows/$EXPORT_NAME.exe
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.EXPORT_NAME }}-windows
           path: build/windows
@@ -169,7 +169,7 @@ jobs:
       image: witchpixels/godot4-omnibuilder3d:latest-4.1.1
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           lfs: true
 
@@ -182,7 +182,7 @@ jobs:
           godot -v --headless --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.EXPORT_NAME }}-linux
           path: build/linux
@@ -194,7 +194,7 @@ jobs:
       image: witchpixels/godot4-omnibuilder3d:latest-4.1.1
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           lfs: true
 
@@ -205,10 +205,10 @@ jobs:
       - name: Windows Build
         run: |
           mkdir -v -p build/windows
-          godot -v --headless --export-release "Windows Desktop" build/windows/$EXPORT_NAME.x86_64
+          godot -v --headless --export-release "Windows Desktop" build/windows/$EXPORT_NAME.exe
           
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.EXPORT_NAME }}-windows
           path: build/windows
