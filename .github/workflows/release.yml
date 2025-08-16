@@ -30,10 +30,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Write repo owner
+        id: write_image_owner
+        run: echo IMAGE_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: peterevans/dockerhub-description
+          repository: ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}
           short-description: ${{ github.event.repository.description }}
