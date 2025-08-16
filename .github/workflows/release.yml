@@ -26,7 +26,7 @@ jobs:
       release_image: true
     secrets: inherit
   update_dockerhub_readme:
-    name: Build Test Project (Windows Desktop)
+    name: Update Docker hub documentation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
