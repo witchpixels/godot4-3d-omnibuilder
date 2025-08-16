@@ -12,7 +12,7 @@ jobs:
     uses: ./.github/workflows/build-image.yml
     with:
       sem_ver: ${{ needs.determine_version.outputs.sem_ver }}
-      godot_version: 4.4
+      godot_version: 4.4.1
       release_name: stable
       release_image: false
 
@@ -24,3 +24,12 @@ jobs:
     with:
       sem_ver: ${{ needs.determine_version.outputs.sem_ver }}
       build_image: ${{ needs.build_image.outputs.github_image_name_and_tag }}
+      
+  pr_build_status_green:
+    needs:
+      - build_image
+      - build_projects
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ok!
+        run: echo Ok!

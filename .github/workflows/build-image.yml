@@ -44,10 +44,14 @@ jobs:
         run: |
           echo "VERSIONED_IMAGE_TAG=${{ inputs.sem_ver }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
           echo "LATEST_IMAGE_TAG=latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
+          echo "MONO_VERSIONED_IMAGE_TAG=${{ inputs.sem_ver }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-mono" >> $GITHUB_ENV
+          echo "MONO_LATEST_IMAGE_TAG=latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-mono" >> $GITHUB_ENV
+          echo "VANILLA_VERSIONED_IMAGE_TAG=${{ inputs.sem_ver }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-vanilla" >> $GITHUB_ENV
+          echo "VANILLA_LATEST_IMAGE_TAG=latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-vanilla" >> $GITHUB_ENV
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1.14.1
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
@@ -55,36 +59,78 @@ jobs:
 
       - name: Login to DockerHub
         if: ${{ inputs.release_image }}
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Build and push Docker images to Github
-        uses: docker/build-push-action@v2.9.0
+      - name: Build and push Mono Docker images to Github
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: Dockerfile
           push: true
           tags: |
             ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VERSIONED_IMAGE_TAG }}
+            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.MONO_VERSIONED_IMAGE_TAG }}
           build-args: |
-            GODOT_VERSION=${{ inputs.godot_version }}
+            GODOT_VERSION=mono-${{ inputs.godot_version }}
             RELEASE_NAME=${{ inputs.release_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Build and Release Docker images to Dockerhub
+      - name: Build and Release Mono Docker images to Dockerhub
         if: ${{ inputs.release_image }}
-        uses: docker/build-push-action@v2.9.0
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: Dockerfile
           push: true
           tags: |
             ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VERSIONED_IMAGE_TAG }}
+            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.MONO_VERSIONED_IMAGE_TAG }}
             ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }}
+            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.MONO_LATEST_IMAGE_TAG }}
+            
+          build-args: |
+            GODOT_VERSION=mono-${{ inputs.godot_version }}
+            RELEASE_NAME=${{ inputs.release_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Vanilla Docker images to Github
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VANILLA_VERSIONED_IMAGE_TAG }}
           build-args: |
             GODOT_VERSION=${{ inputs.godot_version }}
             RELEASE_NAME=${{ inputs.release_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and Release Vanilla Docker images to Dockerhub
+        if: ${{ inputs.release_image }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VANILLA_VERSIONED_IMAGE_TAG }}
+            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VANILLA_LATEST_IMAGE_TAG }}
+            
+          build-args: |
+            GODOT_VERSION=${{ inputs.godot_version }}
+            RELEASE_NAME=${{ inputs.release_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Collect outputs
         id: collect_outputs

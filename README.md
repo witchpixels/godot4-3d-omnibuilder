@@ -1,14 +1,16 @@
 # Godot4 3d Omnibuilder Image
-Tired of fussing around dependencies with the godot-ci container? Tired of C# feeling like a second class citizen? Take heart! the 3d Omnibuilder is here to help!
+Tired of fussing around dependencies with the godot-ci container? Tired of C# feeling like a second class citizen? Frustrated with fiddling with Dockerfiles just so your GDExtension can compile? Take heart! the 3d Omnibuilder is here to help!
 
 Most of this is based on the work done on the work done by [aBarichello's godot-ci project](https://github.com/abarichello/godot-ci/), but what I wanted was a *highly* opinionated, low configuration, turnkey build image. Ideally I just wanted a build script that pulls the repo and runs a single command to build per platform.
 
 ## What does it do
 The image here extends `barichello/godot-ci`'s mono image, and does a few things:
- 1. Installs dotnet sdk 6.0
- 2. Install blender
+ 1. Installs dotnet sdk 8.0 and 9.0
+ 2. Install blender's latest LTS version
  3. Sets the blender path in EditorSettings
  5. Install's gitversion and provides a script, `apply_version_info.sh` which will stamp Full Sever into `application/config/version` in project settings as well as wherever makes sense in export_presets.cfg.
+
+ The container also contains and install of `Scons` `Rustup` and `EMSDK` Though if you are using rust, I recommend using `rustup`'s self-update command before compiling to ensure that you have the version of the toolchain that you need for your project.
 
 ## Usage
 
@@ -34,15 +36,13 @@ jobs:
       image: witchpixels/godot4-omnibuilder3d:latest-4.1.1
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           lfs: true
 
+      # You only need this for Github Actions, Gitlab works out of the box
       - name: Fix paths for Github
         run: setup_github_paths.sh
-
-      - name: Import assets
-        run: godot -v --headless --import
 
       - name: Linux Build
         run: |
@@ -50,7 +50,7 @@ jobs:
           godot -v --headless --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.EXPORT_NAME }}-linux
           path: build/linux
@@ -62,23 +62,21 @@ jobs:
       image: witchpixels/godot4-omnibuilder3d:latest-4.1.1
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           lfs: true
 
+      # You only need this for Github Actions, Gitlab works out of the box
       - name: Fix paths for Github
         run: setup_github_paths.sh
-
-      - name: Import assets
-        run: godot -v --headless --import
 
       - name: Windows Build
         run: |
           mkdir -v -p build/windows
-          godot -v --headless --export-release "Windows Desktop" build/windows/$EXPORT_NAME.x86_64
+          godot -v --headless --export-release "Windows Desktop" build/windows/$EXPORT_NAME.exe
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.EXPORT_NAME }}-windows
           path: build/windows
@@ -104,18 +102,12 @@ jobs:
       image: witchpixels/godot4-omnibuilder3d:latest-4.1.1
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           lfs: true
 
-      - name: Fix paths for Github
-        run: setup_github_paths.sh
-
       - name: Install Blender
         run: install_blender.sh 3.6.2
-
-      - name: Import assets
-        run: godot -v --headless --import
 
       - name: Linux Build
         run: |
@@ -123,7 +115,7 @@ jobs:
           godot -v --headless --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.EXPORT_NAME }}-linux
           path: build/linux
@@ -135,26 +127,20 @@ jobs:
       image: witchpixels/godot4-omnibuilder3d:latest-4.1.1
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           lfs: true
-
-      - name: Fix paths for Github
-        run: setup_github_paths.sh
 
       - name: Install Blender
         run: install_blender.sh 3.6.2
 
-      - name: Import assets
-        run: godot -v --headless --import
-
       - name: Windows Build
         run: |
           mkdir -v -p build/windows
-          godot -v --headless --export-release "Windows Desktop" build/windows/$EXPORT_NAME.x86_64
+          godot -v --headless --export-release "Windows Desktop" build/windows/$EXPORT_NAME.exe
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.EXPORT_NAME }}-windows
           path: build/windows
@@ -183,15 +169,9 @@ jobs:
       image: witchpixels/godot4-omnibuilder3d:latest-4.1.1
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           lfs: true
-
-      - name: Fix paths for Github
-        run: setup_github_paths.sh
-
-      - name: Import assets
-        run: godot -v --headless --import
 
       - name: Stamp Versions
         run: apply_version_info.sh
@@ -202,7 +182,7 @@ jobs:
           godot -v --headless --export-release "Linux/X11" build/linux/$EXPORT_NAME.x86_64
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.EXPORT_NAME }}-linux
           path: build/linux
@@ -214,15 +194,10 @@ jobs:
       image: witchpixels/godot4-omnibuilder3d:latest-4.1.1
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           lfs: true
 
-      - name: Fix paths for Github
-        run: setup_github_paths.sh
-
-      - name: Import assets
-        run: godot -v --headless --import
 
       - name: Stamp Versions
         run: apply_version_info.sh
@@ -230,10 +205,10 @@ jobs:
       - name: Windows Build
         run: |
           mkdir -v -p build/windows
-          godot -v --headless --export-release "Windows Desktop" build/windows/$EXPORT_NAME.x86_64
+          godot -v --headless --export-release "Windows Desktop" build/windows/$EXPORT_NAME.exe
           
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.EXPORT_NAME }}-windows
           path: build/windows

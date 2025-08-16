@@ -13,30 +13,75 @@ on:
 env:
   EXPORT_NAME: omnibuilder_test_project
   PROJECT_PATH: test_project
-
 jobs:
+  verify_tools:
+    strategy:
+      matrix:
+        include:
+          - build_image: ${{ inputs.build_image }}-vanilla
+            artifact_tag: vanilla
+          - build_image: ${{ inputs.build_image }}-mono
+            artifact_tag: mono
+    name: Verify Tools
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.build_image }}
+    steps:
+      - name: Fix paths for Github
+        run: setup_github_paths.sh
+      - name: Show env
+        run: env
+      - name: Show PATH
+        run: echo $PATH
+      - name: Show HOME
+        run: echo $HOME
+      - name: Godot
+        run: godot --version
+      - name: Blender
+        run: blender --version
+      - name: Dotnet
+        run: dotnet --version
+      - name: Scons
+        run: scons --version
+      - name: RustUp
+        run: rustup --version
+      - name: Rust Toolchains
+        run: rustup toolchain list
+      - name: EMSDK
+        run: emsdk list
+
   build_project_linux:
+    strategy:
+      matrix:
+        include:
+          - build_image: ${{ inputs.build_image }}-vanilla
+            artifact_tag: vanilla
+          - build_image: ${{ inputs.build_image }}-mono
+            artifact_tag: mono
     name: Build Test Project (Linux)
     runs-on: ubuntu-latest
     container:
-      image: ${{ inputs.build_image }}
+      image: ${{ matrix.build_image }}
       env:
         EXPORT_NAME: omnibuilder_test_project
         PROJECT_PATH: test_project
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           lfs: true
 
       - name: Fix paths for Github
         run: setup_github_paths.sh
 
+      - name: Setup Editor Settings Environment
+        run: setup_editor_settings_version.sh
+
       - name: Show environment
         run: env
-
+        
       - name: Show editor settings
-        run: cat ~/.config/godot/editor_settings-4.4.tres
+        run: cat $GODOT_EDITOR_SETTINGS_PATH
 
       - name: Prebuild
         run: |
@@ -55,32 +100,42 @@ jobs:
       - name: Linux Build
         run: |
           cd $PROJECT_PATH
-          godot -v --headless --export-release "Linux/X11" ../build/linux/$EXPORT_NAME-${{ inputs.semVer }}.x86_64
+          godot -v --headless --export-release "Linux/X11" ../build/linux/$EXPORT_NAME-${{ inputs.sem_ver }}-${{ matrix.artifact_tag }}.x86_64
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.EXPORT_NAME }}-${{ inputs.semVer }}-linux
+          name: ${{ env.EXPORT_NAME }}-${{ inputs.sem_ver }}-linux-${{ matrix.artifact_tag }}
           path: build/linux
 
   build_project_windows:
+    strategy:
+      matrix:
+        include:
+          - build_image: ${{ inputs.build_image }}-vanilla
+            artifact_tag: vanilla
+          - build_image: ${{ inputs.build_image }}-mono
+            artifact_tag: mono
     name: Build Test Project (Windows Desktop)
     runs-on: ubuntu-latest
     container:
-      image: ${{ inputs.build_image }}
+      image: ${{ matrix.build_image }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           lfs: true
 
       - name: Fix paths for Github
         run: setup_github_paths.sh
 
+      - name: Setup Editor Settings Environment
+        run: setup_editor_settings_version.sh
+
       - name: Show environment
         run: env
 
       - name: Show editor settings
-        run: cat ~/.config/godot/editor_settings-4.4.tres
+        run: cat $GODOT_EDITOR_SETTINGS_PATH
 
       - name: Prebuild
         run: |
@@ -99,9 +154,9 @@ jobs:
       - name: Windows Build
         run: |
           cd $PROJECT_PATH
-          godot -v --headless --export-release "Windows Desktop" ../build/windows/$EXPORT_NAME-${{ inputs.semVer }}.x86_64
+          godot -v --headless --export-release "Windows Desktop" ../build/windows/$EXPORT_NAME-${{ inputs.sem_ver }}-${{ matrix.artifact_tag }}.exe
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.EXPORT_NAME }}-${{ inputs.semVer }}-windows
+          name: ${{ env.EXPORT_NAME }}-${{ inputs.sem_ver }}-windows-${{ matrix.artifact_tag }}
           path: build/windows
