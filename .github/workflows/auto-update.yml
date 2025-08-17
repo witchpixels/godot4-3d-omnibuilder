@@ -1,0 +1,99 @@
+name: Automated Upstream Update
+
+on:
+  schedule:
+    # Daily at 02:00 UTC
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: godot4-omnibuilder3d
+
+jobs:
+  determine_version:
+    # Re-use existing workflow to calculate semantic version for this repository
+    uses: ./.github/workflows/determine-version.yml
+
+  check_upstream:
+    name: Check barichello/godot-ci for new 4.x release
+    runs-on: ubuntu-latest
+    outputs:
+      godot_version: ${{ steps.parse.outputs.version }}
+      release_name:  ${{ steps.parse.outputs.release }}
+      should_build:  ${{ steps.check.outputs.should_build }}
+    steps:
+      - name: Derive lowercase image owner
+        id: owner
+        run: echo "owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Query Docker Hub for latest Godot 4.x mono tag
+        id: fetch
+        run: |
+          API="https://hub.docker.com/v2/repositories/barichello/godot-ci/tags?page_size=100"
+          # First page is ordered by last_updated desc. Select first tag matching mono-4.x.y (no suffix).
+          TAG=$(curl -fsSL "$API" | jq -r '.results[].name' | grep -E '^mono-4\.[0-9]+\.[0-9]+$' | head -n 1)
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Parse tag components
+        id: parse
+        run: |
+          TAG="${{ steps.fetch.outputs.tag }}"
+          if [ -z "$TAG" ]; then
+            echo "Failed to locate upstream tag" >&2; exit 1;
+          fi
+          # Remove optional "mono-" prefix
+          STRIPPED="${TAG#mono-}"
+
+          # Extract version (digits up to first dash or end)
+          VERSION="${STRIPPED%%-*}"
+
+          # Extract release name after the version (if any)
+          RELEASE_PART="${STRIPPED#${VERSION}}"
+          RELEASE_PART="${RELEASE_PART#-}"
+          if [ -z "$RELEASE_PART" ] || [ "$RELEASE_PART" = "$STRIPPED" ]; then
+            RELEASE="stable"
+          else
+            RELEASE="$RELEASE_PART"
+          fi
+
+          # Safety: ensure we have a version like 4.x.y
+          if ! echo "$VERSION" | grep -qE '^4\.[0-9]+\.[0-9]+'; then
+            echo "Unrecognised version format: $VERSION" >&2; exit 1;
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "release=$RELEASE" >> "$GITHUB_OUTPUT"
+
+      - name: Check if this version already exists in our Docker Hub repo
+        id: check
+        env:
+          OWNER: ${{ steps.owner.outputs.owner }}
+        run: |
+          VERSION="${{ steps.parse.outputs.version }}"
+          RELEASE="${{ steps.parse.outputs.release }}"
+          if [ "$RELEASE" = "stable" ]; then
+            IMAGE_TAG="latest-${VERSION}"
+          else
+            IMAGE_TAG="latest-${VERSION}.${RELEASE}"
+          fi
+          API="https://hub.docker.com/v2/repositories/${OWNER}/${IMAGE_NAME}/tags?page_size=100"
+          EXISTS=$(curl -fsSL "$API" | jq -r '.results[].name' | grep -F "$IMAGE_TAG" || true)
+          if [ -z "$EXISTS" ]; then
+            echo "New upstream detected: $IMAGE_TAG"
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No new upstream detected"
+            echo "should_build=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  build_image:
+    needs:
+      - determine_version
+      - check_upstream
+    if: ${{ needs.check_upstream.outputs.should_build == 'true' }}
+    uses: ./.github/workflows/build-image.yml
+    with:
+      sem_ver:      ${{ needs.determine_version.outputs.sem_ver }}
+      godot_version: ${{ needs.check_upstream.outputs.godot_version }}
+      release_name: ${{ needs.check_upstream.outputs.release_name }}
+      release_image: true
+    secrets: inherit
