@@ -19,7 +19,7 @@ ENV PATH="/github/home/.dotnet/tools:/root/.dotnet/tools:${PATH}"
 RUN apt-get update
 
 # Some Common tool dependencies
-RUN apt-get install -y xz-utils curl build-essential
+RUN apt-get install -y xz-utils curl build-essential mingw-w64
 
 # Install Scons for GdExtension Users
 RUN apt-get install -y scons
@@ -27,6 +27,9 @@ RUN apt-get install -y scons
 # Install Rustup for GdRust Users
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
 ENV PATH="/home/github/.cargo/bin:/root/.cargo/bin:${PATH}"
+
+# Setup support for windows builds
+RUN rustup target add x86_64-pc-windows-gnu
 
 # Install wasm toolchain for rust web exports
 RUN rustup toolchain install nightly
