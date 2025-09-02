@@ -19,7 +19,10 @@ ENV PATH="/github/home/.dotnet/tools:/root/.dotnet/tools:${PATH}"
 RUN apt-get update
 
 # Some Common tool dependencies
-RUN apt-get install -y xz-utils curl build-essential mingw-w64
+RUN apt-get install -y xz-utils
+RUN apt-get install -y curl
+RUN apt-get install -y build-essential
+RUN apt-get install -y mingw-w64
 
 # Install Scons for GdExtension Users
 RUN apt-get install -y scons
