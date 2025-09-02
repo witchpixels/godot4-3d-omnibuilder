@@ -50,13 +50,13 @@ jobs:
           echo "VANILLA_LATEST_IMAGE_TAG=latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-vanilla" >> $GITHUB_OUTPUT
           echo github_image_name_and_tag=ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VERSIONED_IMAGE_TAG }} >> $GITHUB_OUTPUT
     outputs:
-      image_owner: ${{ steps.write_image_owner.IMAGE_OWNER }}
-      legacy_versioned_tag: ${{ steps.write_image_tag.VERSIONED_IMAGE_TAG }}
-      legacy_latest_tag: ${{ steps.write_image_tag.LATEST_IMAGE_TAG }}
-      mono_version_tag: ${{ steps.write_image_tag.MONO_VERSIONED_IMAGE_TAG }}
-      mono_latest_tag: ${{ steps.write_image_tag.MONO_LATEST_IMAGE_TAG }}
-      vanilla_version_tag: ${{ steps.write_image_tag.VANILLA_VERSIONED_IMAGE_TAG }}
-      vanilla_latest_tag: ${{ steps.write_image_tag.VANILLA_LATEST_IMAGE_TAG }}
+      image_owner: ${{ steps.write_image_owner.outputs.IMAGE_OWNER }}
+      legacy_versioned_tag: ${{ steps.write_image_tag.outputs.VERSIONED_IMAGE_TAG }}
+      legacy_latest_tag: ${{ steps.write_image_tag.outputs.LATEST_IMAGE_TAG }}
+      mono_version_tag: ${{ steps.write_image_tag.outputs.MONO_VERSIONED_IMAGE_TAG }}
+      mono_latest_tag: ${{ steps.write_image_tag.outputs.MONO_LATEST_IMAGE_TAG }}
+      vanilla_version_tag: ${{ steps.write_image_tag.outputs.VANILLA_VERSIONED_IMAGE_TAG }}
+      vanilla_latest_tag: ${{ steps.write_image_tag.outputs.VANILLA_LATEST_IMAGE_TAG }}
       github_image_name_and_tag: ${{ steps.collect_outputs.outputs.github_image_name_and_tag }}
 
   build_image:
@@ -70,15 +70,15 @@ jobs:
           - name: .NET Containers
             godot_version: mono-${{ inputs.godot_version }}
             tags: |
-              ${{ needs.compute_image_tags.legacy_versioned_tag }}
-              ${{ needs.compute_image_tags.legacy_latest_tag }}
-              ${{ needs.compute_image_tags.mono_version_tag }}
-              ${{ needs.compute_image_tags.mono_latest_tag }}
+              ${{ needs.compute_image_tags.outputs.legacy_versioned_tag }}
+              ${{ needs.compute_image_tags.outputs.legacy_latest_tag }}
+              ${{ needs.compute_image_tags.outputs.mono_version_tag }}
+              ${{ needs.compute_image_tags.outputs.mono_latest_tag }}
           - name: Vanilla Containers
             godot_version: ${{ inputs.godot_version }}
             tags: |
-              ${{ needs.compute_image_tags.vanilla_version_tag }}
-              ${{ needs.compute_image_tags.vanilla_latest_tag }}
+              ${{ needs.compute_image_tags.outputs.vanilla_version_tag }}
+              ${{ needs.compute_image_tags.outputs.vanilla_latest_tag }}
     steps:
       - uses: actions/checkout@v5
       - name: Login to GitHub Container Registry
@@ -117,11 +117,7 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: |
-            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VERSIONED_IMAGE_TAG }}
-            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.MONO_VERSIONED_IMAGE_TAG }}
-            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }}
-            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.MONO_LATEST_IMAGE_TAG }}
+          tags: ${{ matrix.tags }}
             
           build-args: |
             GODOT_VERSION=mono-${{ inputs.godot_version }}
