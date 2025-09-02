@@ -46,13 +46,13 @@ jobs:
       - name: Output image name for test project build
         id: write_image_tag
         run: |
-          echo "VERSIONED_IMAGE_TAG=${{ env.TAG_SEM_VER }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
-          echo "LATEST_IMAGE_TAG=latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
-          echo "MONO_VERSIONED_IMAGE_TAG=${{ env.TAG_SEM_VER }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-mono" >> $GITHUB_OUTPUT
-          echo "MONO_LATEST_IMAGE_TAG=latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-mono" >> $GITHUB_OUTPUT
-          echo "VANILLA_VERSIONED_IMAGE_TAG=${{ env.TAG_SEM_VER }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-vanilla" >> $GITHUB_OUTPUT
-          echo "VANILLA_LATEST_IMAGE_TAG=latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-vanilla" >> $GITHUB_OUTPUT
-          echo github_image_name_and_tag=ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VERSIONED_IMAGE_TAG }} >> $GITHUB_OUTPUT
+          echo "VERSIONED_IMAGE_TAG=${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.TAG_SEM_VER }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
+          echo "LATEST_IMAGE_TAG=${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
+          echo "MONO_VERSIONED_IMAGE_TAG=${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.TAG_SEM_VER }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-mono" >> $GITHUB_OUTPUT
+          echo "MONO_LATEST_IMAGE_TAG=${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-mono" >> $GITHUB_OUTPUT
+          echo "VANILLA_VERSIONED_IMAGE_TAG=${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.TAG_SEM_VER }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-vanilla" >> $GITHUB_OUTPUT
+          echo "VANILLA_LATEST_IMAGE_TAG=${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-vanilla" >> $GITHUB_OUTPUT
+          echo github_image_name_and_tag=ghcr.io/${{ env.VERSIONED_IMAGE_TAG }} >> $GITHUB_OUTPUT
     outputs:
       image_owner: ${{ steps.write_image_owner.outputs.IMAGE_OWNER }}
       legacy_versioned_tag: ${{ steps.write_image_tag.outputs.VERSIONED_IMAGE_TAG }}
@@ -73,14 +73,22 @@ jobs:
         include:
           - name: .NET Containers
             godot_version: mono-${{ inputs.godot_version }}
-            tags: |
+            docker_hub_tags: |
               ${{ needs.compute_image_tags.outputs.legacy_versioned_tag }}
               ${{ needs.compute_image_tags.outputs.legacy_latest_tag }}
               ${{ needs.compute_image_tags.outputs.mono_version_tag }}
               ${{ needs.compute_image_tags.outputs.mono_latest_tag }}
+            github_tags: |
+              ghcr.io/${{ needs.compute_image_tags.outputs.legacy_versioned_tag }}
+              ghcr.io/${{ needs.compute_image_tags.outputs.legacy_latest_tag }}
+              ghcr.io/${{ needs.compute_image_tags.outputs.mono_version_tag }}
+              ghcr.io/${{ needs.compute_image_tags.outputs.mono_latest_tag }}
           - name: Vanilla Containers
             godot_version: ${{ inputs.godot_version }}
-            tags: |
+            github_tags: |
+              ghcr.io/${{ needs.compute_image_tags.outputs.vanilla_version_tag }}
+              ghcr.io/${{ needs.compute_image_tags.outputs.vanilla_latest_tag }}
+            docker_hub_tags: |
               ${{ needs.compute_image_tags.outputs.vanilla_version_tag }}
               ${{ needs.compute_image_tags.outputs.vanilla_latest_tag }}
     steps:
@@ -109,7 +117,7 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: ${{ matrix.tags }}
+          tags: ${{ matrix.github_tags }}
           build-args: |
             GODOT_VERSION=${{ matrix.godot_version }}
             RELEASE_NAME=${{ inputs.release_name }}
@@ -121,7 +129,7 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: ${{ matrix.tags }}
+          tags: ${{ matrix.docker_hub_tags }}
             
           build-args: |
             GODOT_VERSION=mono-${{ inputs.godot_version }}
