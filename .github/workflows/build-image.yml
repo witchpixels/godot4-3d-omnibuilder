@@ -23,7 +23,7 @@ on:
     outputs:
       github_image_name_and_tag:
         description: Name and tag of the image that was built
-        value: ${{ jobs.compute_image_tags.outputs.github_image_name_and_tag }}
+        value: ghcr.io/${{ jobs.compute_image_tags.outputs.versioned_tag }}
 
 env:
   IMAGE_NAME: godot4-omnibuilder3d
@@ -48,20 +48,10 @@ jobs:
         run: |
           echo "VERSIONED_IMAGE_TAG=${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.TAG_SEM_VER }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
           echo "LATEST_IMAGE_TAG=${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
-          echo "MONO_VERSIONED_IMAGE_TAG=${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.TAG_SEM_VER }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-mono" >> $GITHUB_OUTPUT
-          echo "MONO_LATEST_IMAGE_TAG=${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-mono" >> $GITHUB_OUTPUT
-          echo "VANILLA_VERSIONED_IMAGE_TAG=${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.TAG_SEM_VER }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-vanilla" >> $GITHUB_OUTPUT
-          echo "VANILLA_LATEST_IMAGE_TAG=${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-vanilla" >> $GITHUB_OUTPUT
-          echo github_image_name_and_tag=ghcr.io/${{ env.VERSIONED_IMAGE_TAG }} >> $GITHUB_OUTPUT
     outputs:
       image_owner: ${{ steps.write_image_owner.outputs.IMAGE_OWNER }}
-      legacy_versioned_tag: ${{ steps.write_image_tag.outputs.VERSIONED_IMAGE_TAG }}
-      legacy_latest_tag: ${{ steps.write_image_tag.outputs.LATEST_IMAGE_TAG }}
-      mono_version_tag: ${{ steps.write_image_tag.outputs.MONO_VERSIONED_IMAGE_TAG }}
-      mono_latest_tag: ${{ steps.write_image_tag.outputs.MONO_LATEST_IMAGE_TAG }}
-      vanilla_version_tag: ${{ steps.write_image_tag.outputs.VANILLA_VERSIONED_IMAGE_TAG }}
-      vanilla_latest_tag: ${{ steps.write_image_tag.outputs.VANILLA_LATEST_IMAGE_TAG }}
-      github_image_name_and_tag: ${{ steps.collect_outputs.outputs.github_image_name_and_tag }}
+      versioned_tag: ${{ steps.write_image_tag.outputs.VERSIONED_IMAGE_TAG }}
+      latest_tag: ${{ steps.write_image_tag.outputs.LATEST_IMAGE_TAG }}
 
   build_image:
     name: Build Image
@@ -74,23 +64,23 @@ jobs:
           - name: .NET Containers
             godot_version: mono-${{ inputs.godot_version }}
             docker_hub_tags: |
-              ${{ needs.compute_image_tags.outputs.legacy_versioned_tag }}
-              ${{ needs.compute_image_tags.outputs.legacy_latest_tag }}
-              ${{ needs.compute_image_tags.outputs.mono_version_tag }}
-              ${{ needs.compute_image_tags.outputs.mono_latest_tag }}
+              ${{ needs.compute_image_tags.outputs.versioned_tag }}
+              ${{ needs.compute_image_tags.outputs.latest_tag }}
+              ${{ needs.compute_image_tags.outputs.versioned_tag }}-mono
+              ${{ needs.compute_image_tags.outputs.latest_tag }}-mono
             github_tags: |
-              ghcr.io/${{ needs.compute_image_tags.outputs.legacy_versioned_tag }}
-              ghcr.io/${{ needs.compute_image_tags.outputs.legacy_latest_tag }}
-              ghcr.io/${{ needs.compute_image_tags.outputs.mono_version_tag }}
-              ghcr.io/${{ needs.compute_image_tags.outputs.mono_latest_tag }}
+              ghcr.io/${{ needs.compute_image_tags.outputs.versioned_tag }}
+              ghcr.io/${{ needs.compute_image_tags.outputs.latest_tag }}
+              ghcr.io/${{ needs.compute_image_tags.outputs.versioned_tag }}-mono
+              ghcr.io/${{ needs.compute_image_tags.outputs.latest_tag }}-mono
           - name: Vanilla Containers
             godot_version: ${{ inputs.godot_version }}
-            github_tags: |
-              ghcr.io/${{ needs.compute_image_tags.outputs.vanilla_version_tag }}
-              ghcr.io/${{ needs.compute_image_tags.outputs.vanilla_latest_tag }}
             docker_hub_tags: |
-              ${{ needs.compute_image_tags.outputs.vanilla_version_tag }}
-              ${{ needs.compute_image_tags.outputs.vanilla_latest_tag }}
+              ${{ needs.compute_image_tags.outputs.versioned_tag }}-vanilla
+              ${{ needs.compute_image_tags.outputs.latest_tag }}-vanilla
+            github_tags: |
+              ghcr.io/${{ needs.compute_image_tags.outputs.versioned_tag }}-vanilla
+              ghcr.io/${{ needs.compute_image_tags.outputs.latest_tag }}-vanilla
     steps:
       - uses: actions/checkout@v5
       - name: Login to GitHub Container Registry
@@ -99,13 +89,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Login to DockerHub
-        if: ${{ inputs.release_image }}
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -121,6 +104,13 @@ jobs:
           build-args: |
             GODOT_VERSION=${{ matrix.godot_version }}
             RELEASE_NAME=${{ inputs.release_name }}
+
+      - name: Login to DockerHub
+        if: ${{ inputs.release_image }}
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and Release Docker images to Dockerhub
         if: ${{ inputs.release_image }}
