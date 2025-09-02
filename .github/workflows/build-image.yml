@@ -34,19 +34,23 @@ jobs:
     steps:
       - name: Write repo owner
         id: write_image_owner
-        run: echo IMAGE_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_OUTPUT
+        run: echo IMAGE_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+
+      - name: normalize_semver
+        run:
+          echo TAG_SEM_VER=$(echo ${{ inputs.sem_ver }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
 
       - name: Write Image tag from Godot Version
-        run: echo IMAGE_TAG=$(echo ${{ inputs.release_name != 'stable' && format('.{0}', inputs.release_name) || '' }}) >> $GITHUB_OUTPUT
+        run: echo IMAGE_TAG=$(echo ${{ inputs.release_name != 'stable' && format('.{0}', inputs.release_name) || '' }}) >> $GITHUB_ENV
 
       - name: Output image name for test project build
         id: write_image_tag
         run: |
-          echo "VERSIONED_IMAGE_TAG=${{ inputs.sem_ver }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
+          echo "VERSIONED_IMAGE_TAG=${{ env.TAG_SEM_VER }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
           echo "LATEST_IMAGE_TAG=latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
-          echo "MONO_VERSIONED_IMAGE_TAG=${{ inputs.sem_ver }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-mono" >> $GITHUB_OUTPUT
+          echo "MONO_VERSIONED_IMAGE_TAG=${{ env.TAG_SEM_VER }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-mono" >> $GITHUB_OUTPUT
           echo "MONO_LATEST_IMAGE_TAG=latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-mono" >> $GITHUB_OUTPUT
-          echo "VANILLA_VERSIONED_IMAGE_TAG=${{ inputs.sem_ver }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-vanilla" >> $GITHUB_OUTPUT
+          echo "VANILLA_VERSIONED_IMAGE_TAG=${{ env.TAG_SEM_VER }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-vanilla" >> $GITHUB_OUTPUT
           echo "VANILLA_LATEST_IMAGE_TAG=latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-vanilla" >> $GITHUB_OUTPUT
           echo github_image_name_and_tag=ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VERSIONED_IMAGE_TAG }} >> $GITHUB_OUTPUT
     outputs:
