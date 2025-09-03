@@ -122,5 +122,5 @@ jobs:
           tags: ${{ matrix.docker_hub_tags }}
             
           build-args: |
-            GODOT_VERSION=mono-${{ inputs.godot_version }}
+            GODOT_VERSION=${{ matrix.godot_version }}
             RELEASE_NAME=${{ inputs.release_name }}
