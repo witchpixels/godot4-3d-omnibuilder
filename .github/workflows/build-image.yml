@@ -23,18 +23,22 @@ on:
     outputs:
       github_image_name_and_tag:
         description: Name and tag of the image that was built
-        value: ${{ jobs.build_image.outputs.github_image_name_and_tag }}
+        value: ghcr.io/${{ jobs.compute_image_tags.outputs.versioned_tag }}
 
 env:
   IMAGE_NAME: godot4-omnibuilder3d
 jobs:
-  build_image:
-    name: Build Image
+  compute_image_tags:
+    name: Create Image Tag From Godot Version
     runs-on: ubuntu-latest
     steps:
       - name: Write repo owner
         id: write_image_owner
         run: echo IMAGE_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+
+      - name: normalize_semver
+        run:
+          echo TAG_SEM_VER=$(echo ${{ inputs.sem_ver }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
 
       - name: Write Image tag from Godot Version
         run: echo IMAGE_TAG=$(echo ${{ inputs.release_name != 'stable' && format('.{0}', inputs.release_name) || '' }}) >> $GITHUB_ENV
@@ -42,13 +46,42 @@ jobs:
       - name: Output image name for test project build
         id: write_image_tag
         run: |
-          echo "VERSIONED_IMAGE_TAG=${{ inputs.sem_ver }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
-          echo "LATEST_IMAGE_TAG=latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
-          echo "MONO_VERSIONED_IMAGE_TAG=${{ inputs.sem_ver }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-mono" >> $GITHUB_ENV
-          echo "MONO_LATEST_IMAGE_TAG=latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-mono" >> $GITHUB_ENV
-          echo "VANILLA_VERSIONED_IMAGE_TAG=${{ inputs.sem_ver }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-vanilla" >> $GITHUB_ENV
-          echo "VANILLA_LATEST_IMAGE_TAG=latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}-vanilla" >> $GITHUB_ENV
+          echo "VERSIONED_IMAGE_TAG=${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.TAG_SEM_VER }}-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
+          echo "LATEST_IMAGE_TAG=${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:latest-${{ inputs.godot_version }}${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
+    outputs:
+      image_owner: ${{ steps.write_image_owner.outputs.IMAGE_OWNER }}
+      versioned_tag: ${{ steps.write_image_tag.outputs.VERSIONED_IMAGE_TAG }}
+      latest_tag: ${{ steps.write_image_tag.outputs.LATEST_IMAGE_TAG }}
 
+  build_image:
+    name: Build Image
+    runs-on: ubuntu-latest
+    needs:
+      - compute_image_tags
+    strategy:
+      matrix:
+        include:
+          - name: .NET Containers
+            godot_version: mono-${{ inputs.godot_version }}
+            docker_hub_tags: |
+              ${{ needs.compute_image_tags.outputs.versioned_tag }}
+              ${{ needs.compute_image_tags.outputs.latest_tag }}
+              ${{ needs.compute_image_tags.outputs.versioned_tag }}-mono
+              ${{ needs.compute_image_tags.outputs.latest_tag }}-mono
+            github_tags: |
+              ghcr.io/${{ needs.compute_image_tags.outputs.versioned_tag }}
+              ghcr.io/${{ needs.compute_image_tags.outputs.latest_tag }}
+              ghcr.io/${{ needs.compute_image_tags.outputs.versioned_tag }}-mono
+              ghcr.io/${{ needs.compute_image_tags.outputs.latest_tag }}-mono
+          - name: Vanilla Containers
+            godot_version: ${{ inputs.godot_version }}
+            docker_hub_tags: |
+              ${{ needs.compute_image_tags.outputs.versioned_tag }}-vanilla
+              ${{ needs.compute_image_tags.outputs.latest_tag }}-vanilla
+            github_tags: |
+              ghcr.io/${{ needs.compute_image_tags.outputs.versioned_tag }}-vanilla
+              ghcr.io/${{ needs.compute_image_tags.outputs.latest_tag }}-vanilla
+    steps:
       - uses: actions/checkout@v5
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -56,6 +89,21 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker images to Github
+        if: ${{ ! inputs.release_image }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ${{ matrix.github_tags }}
+          build-args: |
+            GODOT_VERSION=${{ matrix.godot_version }}
+            RELEASE_NAME=${{ inputs.release_name }}
 
       - name: Login to DockerHub
         if: ${{ inputs.release_image }}
@@ -63,80 +111,16 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
 
-      - name: Build and push Mono Docker images to Github
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile
-          push: true
-          tags: |
-            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VERSIONED_IMAGE_TAG }}
-            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.MONO_VERSIONED_IMAGE_TAG }}
-          build-args: |
-            GODOT_VERSION=mono-${{ inputs.godot_version }}
-            RELEASE_NAME=${{ inputs.release_name }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Build and Release Mono Docker images to Dockerhub
+      - name: Build and Release Docker images to Dockerhub
         if: ${{ inputs.release_image }}
         uses: docker/build-push-action@v6
         with:
           context: .
           file: Dockerfile
           push: true
-          tags: |
-            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VERSIONED_IMAGE_TAG }}
-            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.MONO_VERSIONED_IMAGE_TAG }}
-            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }}
-            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.MONO_LATEST_IMAGE_TAG }}
+          tags: ${{ matrix.docker_hub_tags }}
             
           build-args: |
-            GODOT_VERSION=mono-${{ inputs.godot_version }}
+            GODOT_VERSION=${{ matrix.godot_version }}
             RELEASE_NAME=${{ inputs.release_name }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Build and push Vanilla Docker images to Github
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile
-          push: true
-          tags: |
-            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VANILLA_VERSIONED_IMAGE_TAG }}
-          build-args: |
-            GODOT_VERSION=${{ inputs.godot_version }}
-            RELEASE_NAME=${{ inputs.release_name }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Build and Release Vanilla Docker images to Dockerhub
-        if: ${{ inputs.release_image }}
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile
-          push: true
-          tags: |
-            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VANILLA_VERSIONED_IMAGE_TAG }}
-            ${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VANILLA_LATEST_IMAGE_TAG }}
-            
-          build-args: |
-            GODOT_VERSION=${{ inputs.godot_version }}
-            RELEASE_NAME=${{ inputs.release_name }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Collect outputs
-        id: collect_outputs
-        run: |
-          echo github_image_name_and_tag=ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VERSIONED_IMAGE_TAG }} >> $GITHUB_OUTPUT
-          echo image_name_and_tag=${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.VERSIONED_IMAGE_TAG }} >> $GITHUB_OUTPUT
-    outputs:
-      github_image_name_and_tag: ${{ steps.collect_outputs.outputs.github_image_name_and_tag }}
-      image_name_and_tag: ${{ steps.collect_outputs.outputs.image_name_and_tag }}
