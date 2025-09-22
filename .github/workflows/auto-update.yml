@@ -30,8 +30,12 @@ jobs:
         id: fetch
         run: |
           API="https://hub.docker.com/v2/repositories/barichello/godot-ci/tags?page_size=100"
-          # First page is ordered by last_updated desc. Select first tag matching mono-4.x.y (no suffix).
-          TAG=$(curl -fsSL "$API" | jq -r '.results[].name' | grep -E '^mono-4\.[0-9]+\.[0-9]+$' | head -n 1)
+          # Select the highest semantic version mono-4.x.y tag from the first 100 results
+          TAG=$(curl -fsSL "$API" \
+            | jq -r '.results[].name' \
+            | grep -E '^mono-4\.[0-9]+\.[0-9]+$' \
+            | sort -V \
+            | tail -n 1)
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Parse tag components
