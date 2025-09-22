@@ -33,7 +33,7 @@ jobs:
           # Select the highest semantic version mono-4.x.y tag from the first 100 results
           TAG=$(curl -fsSL "$API" \
             | jq -r '.results[].name' \
-            | grep -E '^mono-4\.[0-9]+\.[0-9]+$' \
+            | grep -E '^mono-4\.[0-9]+(\.[0-9]+)?$' \
             | sort -V \
             | tail -n 1)
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
@@ -60,8 +60,8 @@ jobs:
             RELEASE="$RELEASE_PART"
           fi
 
-          # Safety: ensure we have a version like 4.x.y
-          if ! echo "$VERSION" | grep -qE '^4\.[0-9]+\.[0-9]+'; then
+          # Safety: ensure we have a version like 4.x or 4.x.y
+          if ! echo "$VERSION" | grep -qE '^4\.[0-9]+(\.[0-9]+)?$'; then
             echo "Unrecognised version format: $VERSION" >&2; exit 1;
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
