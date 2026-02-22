@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.2]
+### Fixed
+  - Fix [#30](https://github.com/witchpixels/godot4-3d-omnibuilder/issues/30)`setup_github_paths.sh` now uses symlinks rather than file copy [#31](Make symlink instead of copying)
+
+### Changed
+  - PRs will now build against 4.6.1
+  - Updated release matrix to cover latest 4.4.x, 4.5.x, 4.6.x
+
 ## [3.2.1]
 ### Fixed
   - Fixed an issue introduced in [3.2.0] where only mono container were emitted upon release.
@@ -89,6 +97,7 @@ Initial Release
     - 4.0.3 stable
     - 4.1.1 stable
 
+[3.2.1]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v3.2.1...v3.2.2
 [3.2.1]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v3.2.0...v3.2.1
 [3.2.0]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/witchpixels/godot4-3d-omnibuilder/compare/v3.0.0...v3.1.0

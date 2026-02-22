@@ -13,9 +13,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - godot_version: 4.4
-            release_name: stable
           - godot_version: 4.4.1
+            release_name: stable
+          - godot_version: 4.5.2
+            release_name: stable
+          - godot_version: 4.6.1
             release_name: stable
     needs: determine_version
     uses: ./.github/workflows/build-image.yml
